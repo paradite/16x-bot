@@ -25,6 +25,15 @@ bot.onText(/!bot (.+)/, (msg, match) => {
   } else if (resp.toLowerCase() === 'IC'.toLowerCase()) {
     reply =
       'IC is an acronym for individual contributor. Individual contributor is one of the two tracks for software engineering career, the other being the management track.';
+  } else if (resp.toLowerCase() === 'lgtm'.toLowerCase()) {
+    reply =
+      'The letters LGTM stand for "looks good to me." Those working in software development often use it after reviewing code.';
+  } else if (
+    resp.toLowerCase() === 'PR'.toLowerCase() ||
+    resp.toLowerCase() === 'MR'.toLowerCase()
+  ) {
+    reply =
+      "PR/MR means pull request or merge request. They tell others about changes you've pushed to a branch in a repository. They are essentially a request to merge one branch into another.";
   }
 
   console.log(`Reply: ${reply}`);
