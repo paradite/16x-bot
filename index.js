@@ -7,7 +7,8 @@ const token = process.env.TELEGRAM_TOKEN;
 const bot = new TelegramBot(token, { polling: true });
 
 // Matches "/define [whatever]"
-bot.onText(/\/define (.+)/, (msg, match) => {
+// bot.onText(/\/define (.+)/, (msg, match) => {
+bot.onText(/(.+)/, (msg, match) => {
   // 'msg' is the received Message from Telegram
   // 'match' is the result of executing the regexp above on the text content
   // of the message
