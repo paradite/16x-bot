@@ -14,6 +14,7 @@ const linkMap = {
 };
 
 // Matches "/define [whatever]"
+// term definition
 // bot.onText(/\/define (.+)/, (msg, match) => {
 bot.onText(/!bot (.+)/, (msg, match) => {
   // 'msg' is the received Message from Telegram
@@ -51,13 +52,26 @@ bot.onText(/!bot (.+)/, (msg, match) => {
   bot.sendMessage(chatId, reply);
 });
 
-// Listen for any kind of message. There are different kinds of
-// messages.
-// bot.on('message', (msg) => {
-//   const chatId = msg.chat.id;
+// Chinese detection
+// bot.onText(/\/define (.+)/, (msg, match) => {
+bot.onText(
+  /([\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff66-\uff9f])/,
+  (msg, match) => {
+    // 'msg' is the received Message from Telegram
+    // 'match' is the result of executing the regexp above on the text content
+    // of the message
 
-//   // send a message to the chat acknowledging receipt of their message
-//   bot.sendMessage(chatId, 'Received your message');
-// });
+    const chatId = msg.chat.id;
+    const resp = match[1]; // the captured "whatever"
+
+    console.log(`Received: ${resp}`);
+
+    const reply = `Gentle reminder to use English in this group so that everyone can understand. 😊`;
+
+    console.log(`Reply: ${reply}`);
+    // send back the matched "whatever" to the chat
+    bot.sendMessage(chatId, reply);
+  }
+);
 
 console.log('Bot started');
