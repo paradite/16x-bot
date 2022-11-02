@@ -16,6 +16,8 @@ bot.onText(/(.+)/, (msg, match) => {
   const chatId = msg.chat.id;
   const resp = match[1]; // the captured "whatever"
 
+  console.log(`Received: ${resp}`);
+
   let reply = `Sorry, I have not learnt about ${resp} yet.`;
   if (resp.toLowerCase() === 'TC'.toLowerCase()) {
     reply =
@@ -25,6 +27,7 @@ bot.onText(/(.+)/, (msg, match) => {
       'IC is an acronym for individual contributor. Individual contributor is one of the two tracks for software engineering career, the other being the management track.';
   }
 
+  console.log(`Reply: ${reply}`);
   // send back the matched "whatever" to the chat
   bot.sendMessage(chatId, reply);
 });
