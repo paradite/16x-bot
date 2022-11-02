@@ -6,6 +6,13 @@ const token = process.env.TELEGRAM_TOKEN;
 // Create a bot that uses 'polling' to fetch new updates
 const bot = new TelegramBot(token, { polling: true });
 
+const linkMap = {
+  rsu: [
+    'Restricted Stock Unit',
+    'https://www.investopedia.com/terms/r/restricted-stock-unit.asp',
+  ],
+};
+
 // Matches "/define [whatever]"
 // bot.onText(/\/define (.+)/, (msg, match) => {
 bot.onText(/!bot (.+)/, (msg, match) => {
@@ -19,7 +26,10 @@ bot.onText(/!bot (.+)/, (msg, match) => {
   console.log(`Received: ${resp}`);
 
   let reply = `Sorry, I have not learnt about ${resp} yet.`;
-  if (resp.toLowerCase() === 'TC'.toLowerCase()) {
+  if (linkMap[resp.toLowerCase()]) {
+    const [name, link] = linkMap[resp.toLowerCase()];
+    reply = `${resp}: ${name}. Read more: ${link}`;
+  } else if (resp.toLowerCase() === 'TC'.toLowerCase()) {
     reply =
       'TC refers to the total compensation of a job in a year. Total compensation in a tech company typically consists of 3 components: base salary, bonus and stock (or RSU / stock options).';
   } else if (resp.toLowerCase() === 'IC'.toLowerCase()) {
