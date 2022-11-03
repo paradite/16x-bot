@@ -91,4 +91,26 @@ bot.onText(
   }
 );
 
+// motivational reply to encourage ppl to carry on joining the LC party
+bot.on('message', (msg) => {
+  // console.log(msg)
+  if (msg.photo && msg.caption) {
+    const match = msg.caption.match(/#LC(20\d{2})(\d{2})(\d{2})/g)
+    const resp = match[0].substring(3, 11); // find the YYYYMMDD
+    console.log(`Received YYYYMMDD: ${resp}`);
+    const chatId = msg.chat.id;
+    let reply = `Sorry, I have not learnt about ${match[0]} format yet.`;
+    if (!(resp.substring(4, 6) <= 12) || !(resp.substring(6, 8) <= 31) || !(resp.substring(0, 4) >= 2022)) {
+      bot.sendMessage(chatId, reply);
+      return;
+    }
+    const submitDate = new Date(resp.substring(0, 4), resp.substring(4, 6) - 1, resp.substring(6, 8));
+    if (!isNaN(submitDate)) {
+      reply = `Good job doing ${submitDate.toLocaleDateString('en-US')} LC question! 🚀`;
+    }
+    bot.sendMessage(chatId, reply);
+  }
+
+});
+
 console.log('Bot started');
