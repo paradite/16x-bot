@@ -99,14 +99,14 @@ bot.on('message', (msg) => {
     const resp = match[0].substring(3, 11); // find the YYYYMMDD
     console.log(`Received YYYYMMDD: ${resp}`);
     const chatId = msg.chat.id;
-    let reply = `Sorry, I have not learnt about ${match[0]} format yet.`;
+    let reply = `Sorry, I have not learnt about ${match[0]} format yet. @${msg.from.username}`;
     if (!(resp.substring(4, 6) <= 12) || !(resp.substring(6, 8) <= 31) || !(resp.substring(0, 4) >= 2022)) {
       bot.sendMessage(chatId, reply);
       return;
     }
     const submitDate = new Date(resp.substring(0, 4), resp.substring(4, 6) - 1, resp.substring(6, 8));
     if (!isNaN(submitDate)) {
-      reply = `Good job doing ${submitDate.toLocaleDateString('en-US')} LC question! 🚀`;
+      reply = `Good job doing ${submitDate.toLocaleDateString('en-US')} LC question! 🚀 @${msg.from.username}`;
     }
     bot.sendMessage(chatId, reply);
   }
