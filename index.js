@@ -58,7 +58,7 @@ bot.onText(/!bot (.+)/, (msg, match) => {
   if (definitionMap[resp.toLowerCase()]) {
     const [description, link] = definitionMap[resp.toLowerCase()];
     if (link) {
-      reply = `${resp}: ${description}. Read more: ${link}`;
+      reply = `${description}. Read more: ${link}`;
     } else {
       reply = `${description}`;
     }
