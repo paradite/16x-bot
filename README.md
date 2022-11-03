@@ -9,13 +9,13 @@ Made by [16x.engineer](https://16x.engineer/).
 Define technical terms
 
 <p float="left">
-  <img src="https://raw.githubusercontent.com/paradite/16x-bot/main/screenshots/define.png" alt="Define technical terms" width="600"/>
+  <img src="https://github.com/paradite/16x-bot/blob/main/screenshots/define.png?raw=true" alt="Define technical terms" width="600"/>
 </p>
 
 Reminder for using English
 
 <p float="left">
-  <img src="https://raw.githubusercontent.com/paradite/16x-bot/main/screenshots/language.png" alt="Reminder for using English" width="600"/>
+  <img src="https://github.com/paradite/16x-bot/blob/main/screenshots/language.png?raw=true" alt="Reminder for using English" width="600"/>
 </p>
 
 ## Usage
