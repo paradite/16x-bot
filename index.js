@@ -1,4 +1,5 @@
 const TelegramBot = require('node-telegram-bot-api');
+const axios = require('axios');
 
 // replace the value below with the Telegram token you receive from @BotFather
 const token = process.env.TELEGRAM_TOKEN;
@@ -92,7 +93,7 @@ bot.onText(
 );
 
 // motivational reply to encourage ppl to carry on joining the LC party
-bot.on('message', (msg) => {
+bot.on('message', async (msg) => {
   // console.log(msg)
   if (msg.photo && msg.caption) {
     const match = msg.caption.match(/#LC(20\d{2})(\d{2})(\d{2})/g)
@@ -106,7 +107,8 @@ bot.on('message', (msg) => {
     }
     const submitDate = new Date(resp.substring(0, 4), resp.substring(4, 6) - 1, resp.substring(6, 8));
     if (!isNaN(submitDate)) {
-      reply = `Good job doing ${submitDate.toLocaleDateString('en-US')} LC question! 🚀 @${msg.from.username}`;
+      const response = await axios.get(`https://api.github.com/zen`)
+      reply = `Good job doing ${submitDate.toLocaleDateString('en-US')} LC question! 🚀 @${msg.from.username}\r\n${response.data}`;
     }
     bot.sendMessage(chatId, reply);
   }
