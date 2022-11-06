@@ -72,7 +72,7 @@ bot.onText(/!bot (.+)/, (msg, match) => {
 
   console.log(`Received: ${resp}`);
 
-  let reply = `Hi ${namePart}. I have not learnt about ${resp} yet. Open a PR to add it. Link in bot bio.`;
+  let reply = `Hi ${namePart}. I have not learnt about ${resp} yet.\r\nOpen a PR to add it (Link in bot bio).`;
   if (definitionMap[resp.toLowerCase()]) {
     const [description, link] = definitionMap[resp.toLowerCase()];
     if (link) {
