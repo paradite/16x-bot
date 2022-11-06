@@ -37,3 +37,7 @@ pm2
 ```bash
 $ TELEGRAM_TOKEN=XXX pm2 start index.js
 ```
+
+## Contribute
+
+PRs welcomed!
