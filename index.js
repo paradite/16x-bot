@@ -8,6 +8,15 @@ const token = process.env.TELEGRAM_TOKEN;
 const bot = new TelegramBot(token, { polling: true });
 
 const definitionMap = {
+  hello: ['Hello! I am your friendly 16x Engineer bot.'],
+  hi: ['Hi! I am your friendly 16x Engineer bot.'],
+  faang: [
+    `FAANG is an acronym that refers to five prominent American technology companies: Meta (formerly known as Facebook), Amazon, Apple, Netflix and Alphabet (formerly known as Google).`,
+  ],
+  hft: [
+    'High-frequency trading, also known as HFT, is a method of trading that uses powerful computer programs to transact a large number of orders in fractions of a second.',
+    'https://www.investopedia.com/terms/h/high-frequency-trading.asp',
+  ],
   rsu: [
     'Restricted Stock Unit',
     'https://www.investopedia.com/terms/r/restricted-stock-unit.asp',
