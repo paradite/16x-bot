@@ -169,11 +169,15 @@ bot.on('message', async (msg) => {
     });
 
     try {
-      client.query('SELECT NOW()', (err, res) => {
-        if (err) throw err;
-        console.log(res);
-        client.end();
-      });
+      console.log('executing query');
+      client.query(
+        `INSERT INTO lc_records (username, has_image, msg_text, timestamp) VALUES ($1, $2, $3)`,
+        [namePart, true, msg.caption, new Date()],
+        (err, res) => {
+          if (err) throw err;
+          console.log(res);
+        }
+      );
     } catch (error) {
       console.error('pg write fail');
       console.error(error);
