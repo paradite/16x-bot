@@ -186,6 +186,8 @@ bot.on('message', async (msg) => {
       console.error(error);
     }
 
+    console.log('dateStr', dateStr);
+    console.log('statsStr', statsStr);
     reply = `Good job doing ${dateStr} LC question! 🚀 ${namePart}${statsStr}\r\n${response.data}`;
     bot.sendMessage(chatId, reply, {
       reply_to_message_id: messageId,
