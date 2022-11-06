@@ -38,6 +38,16 @@ pm2
 $ TELEGRAM_TOKEN=XXX pm2 start index.js
 ```
 
+with pgsql
+
+```bash
+$ PGUSER=dbuser \
+  PGHOST=database.server.com \
+  PGPASSWORD=secretpassword \
+  PGDATABASE=mydb \
+  TELEGRAM_TOKEN=XXX pm2 start index.js
+```
+
 ## Contribute
 
 PRs welcomed!

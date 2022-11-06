@@ -1,5 +1,13 @@
 const TelegramBot = require('node-telegram-bot-api');
 const axios = require('axios');
+const { Client } = require('pg');
+
+const client = new Client();
+
+client
+  .connect()
+  .then(() => console.log('connected'))
+  .catch((err) => console.error('connection error', err.stack));
 
 // replace the value below with the Telegram token you receive from @BotFather
 const token = process.env.TELEGRAM_TOKEN;
@@ -159,6 +167,17 @@ bot.on('message', async (msg) => {
     bot.sendMessage(chatId, reply, {
       reply_to_message_id: messageId,
     });
+
+    try {
+      client.query('SELECT NOW()', (err, res) => {
+        if (err) throw err;
+        console.log(res);
+        client.end();
+      });
+    } catch (error) {
+      console.error('pg write fail');
+      console.error(error);
+    }
   }
 });
 
