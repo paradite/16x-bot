@@ -87,7 +87,7 @@ bot.onText(/!bot (.+)/, (msg, match) => {
   bot.sendMessage(chatId, reply, {
     reply_to_message_id: messageId,
     disable_web_page_preview: true,
-    parse_mode: 'MarkdownV2',
+    parse_mode: 'Markdown',
   });
 });
 
