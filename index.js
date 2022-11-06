@@ -200,7 +200,7 @@ bot.on('message', async (msg) => {
         [namePart, dateStr, true, msg.caption, new Date()],
         (err, res) => {
           if (err) throw err;
-          console.log(res);
+          console.log('insert success');
         }
       );
     } catch (error) {
