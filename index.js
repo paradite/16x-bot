@@ -42,6 +42,21 @@ const definitionMap = {
   ],
 };
 
+/**
+ * Get name from the msg for addressing the user in reply
+ *
+ * @param {msTelegramBot.Messageg} msg
+ */
+function getNameForReply(msg) {
+  let namePart = 'Anonymous user';
+  if (msg.from.username) {
+    namePart = `@${msg.from.username}`;
+  } else if (msg.from.first_name) {
+    namePart = msg.from.first_name;
+  }
+  return namePart;
+}
+
 // Matches "/define [whatever]"
 // term definition
 // bot.onText(/\/define (.+)/, (msg, match) => {
@@ -50,12 +65,14 @@ bot.onText(/!bot (.+)/, (msg, match) => {
   // 'match' is the result of executing the regexp above on the text content
   // of the message
 
+  const messageId = msg.message_id;
   const chatId = msg.chat.id;
+  const namePart = getNameForReply(msg);
   const resp = match[1]; // the captured "whatever"
 
   console.log(`Received: ${resp}`);
 
-  let reply = `Sorry, I have not learnt about ${resp} yet.`;
+  let reply = `Hi ${namePart}. I have not learnt about ${resp} yet. Open a PR to add it. Link in bot bio.`;
   if (definitionMap[resp.toLowerCase()]) {
     const [description, link] = definitionMap[resp.toLowerCase()];
     if (link) {
@@ -67,7 +84,9 @@ bot.onText(/!bot (.+)/, (msg, match) => {
 
   console.log(`Reply: ${reply}`);
   // send back the matched "whatever" to the chat
-  bot.sendMessage(chatId, reply);
+  bot.sendMessage(chatId, reply, {
+    reply_to_message_id: messageId,
+  });
 });
 
 // Chinese detection
@@ -78,41 +97,58 @@ bot.onText(
     // 'msg' is the received Message from Telegram
     // 'match' is the result of executing the regexp above on the text content
     // of the message
-
+    const messageId = msg.message_id;
     const chatId = msg.chat.id;
+    const namePart = getNameForReply(msg);
     const resp = match[1]; // the captured "whatever"
 
     console.log(`Received: ${resp}`);
 
-    const reply = `Gentle reminder to use English in this group so that everyone can understand. 😊`;
+    const reply = `Hi, ${namePart}. This is a gentle reminder to use English in this group so that everyone can understand. 😊`;
 
     console.log(`Reply: ${reply}`);
     // send back the matched "whatever" to the chat
-    bot.sendMessage(chatId, reply);
+    bot.sendMessage(chatId, reply, {
+      reply_to_message_id: messageId,
+    });
   }
 );
 
 // motivational reply to encourage ppl to carry on joining the LC party
 bot.on('message', async (msg) => {
   // console.log(msg)
+  const messageId = msg.message_id;
   if (msg.photo && msg.caption) {
-    const match = msg.caption.match(/#LC(20\d{2})(\d{2})(\d{2})/g)
+    const match = msg.caption.match(/#LC(20\d{2})(\d{2})(\d{2})/g);
     const resp = match[0].substring(3, 11); // find the YYYYMMDD
     console.log(`Received YYYYMMDD: ${resp}`);
     const chatId = msg.chat.id;
-    let reply = `Sorry, I have not learnt about ${match[0]} format yet. @${msg.from.username}`;
-    if (!(resp.substring(4, 6) <= 12) || !(resp.substring(6, 8) <= 31) || !(resp.substring(0, 4) >= 2022)) {
+    const namePart = getNameForReply(msg);
+
+    let reply = `Sorry ${namePart}, I have not learnt about ${match[0]} format yet.`;
+    if (
+      !(resp.substring(4, 6) <= 12) ||
+      !(resp.substring(6, 8) <= 31) ||
+      !(resp.substring(0, 4) >= 2022)
+    ) {
       bot.sendMessage(chatId, reply);
       return;
     }
-    const submitDate = new Date(resp.substring(0, 4), resp.substring(4, 6) - 1, resp.substring(6, 8));
+    const submitDate = new Date(
+      resp.substring(0, 4),
+      resp.substring(4, 6) - 1,
+      resp.substring(6, 8)
+    );
     if (!isNaN(submitDate)) {
-      const response = await axios.get(`https://api.github.com/zen`)
-      reply = `Good job doing ${submitDate.toLocaleDateString('en-US')} LC question! 🚀 @${msg.from.username}\r\n${response.data}`;
+      const response = await axios.get(`https://api.github.com/zen`);
+      reply = `Good job doing ${submitDate.toLocaleDateString(
+        'en-US'
+      )} LC question! 🚀 ${namePart}\r\n${response.data}`;
     }
-    bot.sendMessage(chatId, reply);
+    bot.sendMessage(chatId, reply, {
+      reply_to_message_id: messageId,
+    });
   }
-
 });
 
 console.log('Bot started');
