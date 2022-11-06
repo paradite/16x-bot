@@ -164,7 +164,29 @@ bot.on('message', async (msg) => {
     }
     const dateStr = submitDate.toLocaleDateString('en-UK');
     const response = await axios.get(`https://api.github.com/zen`);
-    reply = `Good job doing ${dateStr} LC question! 🚀 ${namePart}\r\n${response.data}`;
+
+    let statsStr = '';
+    try {
+      client.query(
+        `SELECT COUNT(*) FROM lc_records as a WHERE a.qn_date = $1`,
+        [dateStr],
+        (err, res) => {
+          if (err) throw err;
+          const existingCount = res.rows[0];
+          console.log('existingCount', existingCount);
+          if (existingCount >= 0) {
+            statsStr = `\r\nYou are the ${getCountStr(
+              existingCount + 1
+            )} person to submit for ${dateStr}.`;
+          }
+        }
+      );
+    } catch (error) {
+      console.error('pg count query fail');
+      console.error(error);
+    }
+
+    reply = `Good job doing ${dateStr} LC question! 🚀 ${namePart}${statsStr}\r\n${response.data}`;
     bot.sendMessage(chatId, reply, {
       reply_to_message_id: messageId,
     });
@@ -185,5 +207,17 @@ bot.on('message', async (msg) => {
     }
   }
 });
+
+function getCountStr(count) {
+  if (count === 1) {
+    return 'first';
+  } else if (count === 2) {
+    return 'second';
+  } else if (count === 3) {
+    return 'third';
+  } else {
+    return `${count}th`;
+  }
+}
 
 console.log('Bot started');
