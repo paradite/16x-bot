@@ -18,6 +18,12 @@ Reminder for using English
   <img src="https://github.com/paradite/16x-bot/blob/main/screenshots/language.png?raw=true" alt="Reminder for using English" width="600"/>
 </p>
 
+Leetcode Daily Challenge Response (by [MrMarciaOng](https://github.com/MrMarciaOng))
+
+<p float="left">
+  <img src="https://github.com/paradite/16x-bot/blob/main/screenshots/leetcode.png?raw=true" alt="Leetcode Daily Challenge Response" width="600"/>
+</p>
+
 ## Usage
 
 node
