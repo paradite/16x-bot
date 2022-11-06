@@ -72,11 +72,11 @@ bot.onText(/!bot (.+)/, (msg, match) => {
 
   console.log(`Received: ${resp}`);
 
-  let reply = `Hi ${namePart}. I have not learnt about ${resp} yet.\r\nOpen a PR to add it (Link in bot bio).`;
+  let reply = `Hi ${namePart}. I have not learnt about ${resp} yet.\r\nOpen a PR [here](https://github.com/paradite/16x-bot) to add it.`;
   if (definitionMap[resp.toLowerCase()]) {
     const [description, link] = definitionMap[resp.toLowerCase()];
     if (link) {
-      reply = `${description}\nRead more: ${link}`;
+      reply = `${description}\r\nRead more [here](${link}).`;
     } else {
       reply = `${description}`;
     }
@@ -86,6 +86,8 @@ bot.onText(/!bot (.+)/, (msg, match) => {
   // send back the matched "whatever" to the chat
   bot.sendMessage(chatId, reply, {
     reply_to_message_id: messageId,
+    disable_web_page_preview: true,
+    parse_mode: 'MarkdownV2',
   });
 });
 
