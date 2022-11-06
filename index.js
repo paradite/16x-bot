@@ -171,7 +171,7 @@ bot.on('message', async (msg) => {
     try {
       console.log('executing query');
       client.query(
-        `INSERT INTO lc_records (username, has_image, msg_text, timestamp) VALUES ($1, $2, $3)`,
+        `INSERT INTO lc_records (username, has_image, msg_text, timestamp) VALUES ($1, $2, $3, $4)`,
         [namePart, true, msg.caption, new Date()],
         (err, res) => {
           if (err) throw err;
