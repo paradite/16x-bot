@@ -172,7 +172,7 @@ bot.on('message', async (msg) => {
         [dateStr],
         (err, res) => {
           if (err) throw err;
-          const existingCount = res.rows[0];
+          const existingCount = res.rows[0].count;
           console.log('existingCount', existingCount);
           if (existingCount >= 0) {
             statsStr = `\r\nYou are the ${getCountStr(
