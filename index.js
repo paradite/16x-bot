@@ -175,7 +175,7 @@ bot.on('message', async (msg) => {
             console.error('pg count query fail');
             console.error(error);
           }
-          const existingCount = res.rows[0].count;
+          const existingCount = Number(res.rows[0].count);
           console.log('existingCount', existingCount);
           if (existingCount >= 0) {
             statsStr = `\r\nYou are the ${getCountStr(
