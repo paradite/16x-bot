@@ -158,12 +158,13 @@ bot.on('message', async (msg) => {
       resp.substring(4, 6) - 1,
       resp.substring(6, 8)
     );
-    if (!isNaN(submitDate)) {
-      const response = await axios.get(`https://api.github.com/zen`);
-      reply = `Good job doing ${submitDate.toLocaleDateString(
-        'en-US'
-      )} LC question! 🚀 ${namePart}\r\n${response.data}`;
+    if (isNaN(submitDate)) {
+      console.error('invalid date');
+      return;
     }
+    const dateStr = submitDate.toLocaleDateString('en-UK');
+    const response = await axios.get(`https://api.github.com/zen`);
+    reply = `Good job doing ${dateStr} LC question! 🚀 ${namePart}\r\n${response.data}`;
     bot.sendMessage(chatId, reply, {
       reply_to_message_id: messageId,
     });
@@ -171,8 +172,8 @@ bot.on('message', async (msg) => {
     try {
       console.log('executing query');
       client.query(
-        `INSERT INTO lc_records (username, has_image, msg_text, timestamp) VALUES ($1, $2, $3, $4)`,
-        [namePart, true, msg.caption, new Date()],
+        `INSERT INTO lc_records (username, qn_date, has_image, msg_text, timestamp) VALUES ($1, $2, $3, $4, $5)`,
+        [namePart, dateStr, true, msg.caption, new Date()],
         (err, res) => {
           if (err) throw err;
           console.log(res);
