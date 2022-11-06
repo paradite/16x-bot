@@ -171,7 +171,10 @@ bot.on('message', async (msg) => {
         `SELECT COUNT(*) FROM lc_records as a WHERE a.qn_date = $1`,
         [dateStr],
         (err, res) => {
-          if (err) throw err;
+          if (err) {
+            console.error('pg count query fail');
+            console.error(error);
+          }
           const existingCount = res.rows[0].count;
           console.log('existingCount', existingCount);
           if (existingCount >= 0) {
@@ -179,19 +182,19 @@ bot.on('message', async (msg) => {
               existingCount + 1
             )} person to submit for ${dateStr}.`;
           }
+
+          console.log('dateStr', dateStr);
+          console.log('statsStr', statsStr);
+          reply = `Good job doing ${dateStr} LC question! 🚀 ${namePart}${statsStr}\r\n${response.data}`;
+          bot.sendMessage(chatId, reply, {
+            reply_to_message_id: messageId,
+          });
         }
       );
     } catch (error) {
-      console.error('pg count query fail');
+      console.error('send fail');
       console.error(error);
     }
-
-    console.log('dateStr', dateStr);
-    console.log('statsStr', statsStr);
-    reply = `Good job doing ${dateStr} LC question! 🚀 ${namePart}${statsStr}\r\n${response.data}`;
-    bot.sendMessage(chatId, reply, {
-      reply_to_message_id: messageId,
-    });
 
     try {
       console.log('executing query');
