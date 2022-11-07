@@ -124,17 +124,23 @@ bot.on('message', async (msg) => {
     const chatId = msg.chat.id;
     const namePart = getNameForReply(msg);
 
-    let reply = `Sorry ${namePart}, the date you submitted is not valid. Please use current date with format #LCYYYYMMDD. 😊`
+    let reply = `Sorry ${namePart}, the date you submitted is not valid. Please use current date with format #LCYYYYMMDD. 😊`;
 
-    if (!dayjs(resp, 'YYYYMMDD').isBetween(dayjs().subtract(1, 'day'), dayjs().add(1, 'day'))) {
+    const submissionDate = dayjs(resp, 'YYYYMMDD');
+    console.log('submissionDate', submissionDate);
+
+    if (
+      !submissionDate.isBetween(
+        dayjs().subtract(2, 'day'),
+        dayjs().add(2, 'day')
+      )
+    ) {
       bot.sendMessage(chatId, reply, {
         reply_to_message_id: messageId,
       });
       return;
-
     }
 
-    let submissionDate = dayjs(resp, 'YYYYMMDD');
     const dateStr = submissionDate.format('DD/MM/YYYY');
     const response = await axios.get(`https://api.github.com/zen`);
 
