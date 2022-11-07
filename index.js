@@ -1,7 +1,9 @@
 const TelegramBot = require('node-telegram-bot-api');
 const axios = require('axios');
 const { Client } = require('pg');
-
+const dayjs = require('dayjs');
+let isBetween = require('dayjs/plugin/isBetween');
+dayjs.extend(isBetween);
 const client = new Client();
 
 client
@@ -122,70 +124,53 @@ bot.on('message', async (msg) => {
     const chatId = msg.chat.id;
     const namePart = getNameForReply(msg);
 
-    let reply = `Sorry ${namePart}, I have not learnt about ${match[0]} format yet.`;
-    if (
-      !(resp.substring(4, 6) <= 12) ||
-      !(resp.substring(6, 8) <= 31) ||
-      !(resp.substring(0, 4) >= 2022)
-    ) {
+    let reply = `Sorry ${namePart}, the date you submitted is not valid. Please use current date with format #LCYYYYMMDD. 😊`
+
+    if (!dayjs(resp, 'YYYYMMDD').isBetween(dayjs().subtract(1, 'day'), dayjs().add(1, 'day'))) {
       bot.sendMessage(chatId, reply, {
         reply_to_message_id: messageId,
       });
       return;
+
     }
-    const submitDate = new Date(
-      resp.substring(0, 4),
-      resp.substring(4, 6) - 1,
-      resp.substring(6, 8)
-    );
-    if (isNaN(submitDate)) {
-      console.log('invalid date', resp);
-      return;
-    }
-    const dateStr = submitDate.toLocaleDateString('en-UK');
+
+    let submissionDate = dayjs(resp, 'YYYYMMDD');
+    const dateStr = submissionDate.format('DD/MM/YYYY');
     const response = await axios.get(`https://api.github.com/zen`);
 
     let statsStr = '';
     try {
-      client.query(
-        `SELECT COUNT(*) FROM lc_records as a WHERE a.qn_date = $1`,
-        [dateStr],
-        (err, res) => {
-          if (err) {
-            console.error('pg count query fail');
-            console.error(error);
-          }
-          const existingCount = Number(res.rows[0].count);
-          console.log('existingCount', existingCount);
-          if (existingCount >= 0) {
-            statsStr = `\r\nYou are the ${getCountStr(
-              existingCount + 1
-            )} person to submit for ${dateStr}.`;
-          }
-
-          console.log('dateStr', dateStr);
-          console.log('statsStr', statsStr);
-          reply = `Good job doing ${dateStr} LC question! 🚀 ${namePart}${statsStr}\r\n${response.data}`;
-          bot.sendMessage(chatId, reply, {
-            reply_to_message_id: messageId,
-          });
-        }
+      let res = await client.query(
+        `SELECT COUNT(*) FROM ( SELECT DISTINCT a.username FROM lc_records as a WHERE a.qn_date = $1 and a.username != $2 ) as temp `,
+        [dateStr, namePart]
       );
+      const existingCount = Number(res.rows[0].count);
+      console.log('existingCount', existingCount);
+      if (existingCount >= 0) {
+        statsStr = `\r\nYou are the ${getCountStr(
+          existingCount + 1
+        )} person to submit for ${dateStr}.`;
+      }
+
+      console.log('dateStr', dateStr);
+      console.log('statsStr', statsStr);
+      reply = `Good job doing ${dateStr} LC question! 🚀 ${namePart}${statsStr}\r\n${response.data}`;
+      bot.sendMessage(chatId, reply, {
+        reply_to_message_id: messageId,
+      });
     } catch (error) {
+      console.error('pg count query fail');
       console.error('send fail');
       console.error(error);
     }
 
     try {
       console.log('executing query');
-      client.query(
+      await client.query(
         `INSERT INTO lc_records (username, qn_date, has_image, msg_text, timestamp) VALUES ($1, $2, $3, $4, $5)`,
-        [namePart, dateStr, true, msg.caption, new Date()],
-        (err, res) => {
-          if (err) throw err;
-          console.log('insert success');
-        }
+        [namePart, dateStr, true, msg.caption, new Date()]
       );
+      console.log('insert success');
     } catch (error) {
       console.error('pg write fail');
       console.error(error);
