@@ -9,55 +9,29 @@ client
   .then(() => console.log('connected'))
   .catch((err) => console.error('connection error', err.stack));
 
+// Initialize dictionary from remote json
+
+let definitionMap = {};
+
+axios
+  .get(termsUrl)
+  .then((response) => {
+    console.log(
+      'got remote dictionary of size',
+      Object.keys(response.data).length
+    );
+    definitionMap = response.data;
+  })
+  .catch((error) => {
+    console.error('init dictionary fail');
+    console.error(error);
+  });
+
 // replace the value below with the Telegram token you receive from @BotFather
 const token = process.env.TELEGRAM_TOKEN;
 
 // Create a bot that uses 'polling' to fetch new updates
 const bot = new TelegramBot(token, { polling: true });
-
-const definitionMap = {
-  hello: ['Hello! I am your friendly 16x Engineer bot.'],
-  hi: ['Hi! I am your friendly 16x Engineer bot.'],
-  faang: [
-    `FAANG is an acronym that refers to five prominent American technology companies: Meta (formerly known as Facebook), Amazon, Apple, Netflix and Alphabet (formerly known as Google).`,
-  ],
-  hft: [
-    'High-frequency trading, also known as HFT, is a method of trading that uses powerful computer programs to transact a large number of orders in fractions of a second.',
-    'https://www.investopedia.com/terms/h/high-frequency-trading.asp',
-  ],
-  rsu: [
-    'Restricted Stock Unit',
-    'https://www.investopedia.com/terms/r/restricted-stock-unit.asp',
-  ],
-  lc: [
-    'LC is an acronym for LeetCode, an online judge (OJ) for practicing coding problems and prepare for technical interviews.',
-    'https://leetcode.com/',
-  ],
-  tc: [
-    'TC refers to the total compensation of a job in a year. Total compensation in a tech company typically consists of 3 components: base salary, bonus and stock (or RSU / stock options).',
-  ],
-  ic: [
-    'IC is an acronym for individual contributor. Individual contributor is one of the two tracks for software engineering career, the other being the management track.',
-  ],
-  lgtm: [
-    'The letters LGTM stand for "looks good to me." Those working in software development often use it after reviewing code.',
-  ],
-  pr: [
-    "PR/MR means pull request or merge request. They tell others about changes you've pushed to a branch in a repository. They are essentially a request to merge one branch into another.",
-  ],
-  mr: [
-    "PR/MR means pull request or merge request. They tell others about changes you've pushed to a branch in a repository. They are essentially a request to merge one branch into another.",
-  ],
-  swe: [
-    'SWE is an acronym for software engineer, a profession where people code and write software.',
-  ],
-  em: [
-    'EM is an acronym for engineering manager. Engineering manager (management) is one of the two tracks for software engineering career, the other being the individual contributor track.',
-  ],
-  pip: [
-    'In tech companies, PIP means performance improvement plan. The PIP program is for people whose performance did not meet expectations in a review cycle. If PIP goals are not met at the end of the program, the employee will usually be let go.',
-  ],
-};
 
 /**
  * Get name from the msg for addressing the user in reply
