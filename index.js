@@ -139,6 +139,9 @@ bot.on('message', async (msg) => {
   const messageId = msg.message_id;
   if (msg.photo && msg.caption) {
     const match = msg.caption.match(/#LC(20\d{2})(\d{2})(\d{2})/g);
+    if (!match) {
+      return;
+    }
     const resp = match[0].substring(3, 11); // find the YYYYMMDD
     console.log(`Received YYYYMMDD: ${resp}`);
     const chatId = msg.chat.id;
@@ -150,7 +153,9 @@ bot.on('message', async (msg) => {
       !(resp.substring(6, 8) <= 31) ||
       !(resp.substring(0, 4) >= 2022)
     ) {
-      bot.sendMessage(chatId, reply);
+      bot.sendMessage(chatId, reply, {
+        reply_to_message_id: messageId,
+      });
       return;
     }
     const submitDate = new Date(
@@ -159,7 +164,7 @@ bot.on('message', async (msg) => {
       resp.substring(6, 8)
     );
     if (isNaN(submitDate)) {
-      console.error('invalid date');
+      console.log('invalid date', resp);
       return;
     }
     const dateStr = submitDate.toLocaleDateString('en-UK');
