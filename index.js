@@ -77,6 +77,8 @@ async function getDinBotResponse(query) {
       console.log(data);
       return undefined;
     }
+    console.log('received Din bot response:');
+    console.log(data);
     return data;
   } catch (error) {
     console.log('Din bot error');
