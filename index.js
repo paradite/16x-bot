@@ -79,6 +79,15 @@ async function getDinBotResponse(query) {
     }
     console.log('received Din bot response:');
     console.log(data);
+    if (
+      query.toLowerCase().includes('code') &&
+      query.toLowerCase().includes('in')
+    ) {
+      // walkaround for code formatting
+      return `\`\`\`
+${data}
+\`\`\``;
+    }
     return data;
   } catch (error) {
     console.log('Din bot error');
