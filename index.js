@@ -52,17 +52,17 @@ function getNameForReply(msg) {
 }
 
 async function getDinBotResponse(query) {
-  const dingBotUrl =
+  const dinBotUrl =
     'https://asia-southeast1-free-jobs-253208.cloudfunctions.net/din';
 
-  const dingToken = process.env.DING_TOKEN;
+  const dinToken = process.env.DIN_TOKEN;
 
   try {
     const response = await axios.post(
-      dingBotUrl,
+      dinBotUrl,
       {
         message: query,
-        key: dingToken,
+        key: dinToken,
       },
       {
         headers: {},
