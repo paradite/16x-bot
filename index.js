@@ -12,6 +12,7 @@ client
 // Initialize dictionary from remote json
 
 let definitionMap = {};
+const termsUrl = 'https://paradite.github.io/16x-bot/terms.json';
 
 axios
   .get(termsUrl)
