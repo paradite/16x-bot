@@ -108,12 +108,12 @@ bot.onText(/!bot (.+)/, async (msg, match) => {
     } else {
       reply = `${description}`;
     }
-  }
-
-  // redirect to Din bot
-  const dinBotResponseText = await getDinBotResponse(resp);
-  if (dinBotResponseText) {
-    reply = `(Redirecting to Din bot...)\r\n${dinBotResponseText}`;
+  } else {
+    // redirect to Din bot
+    const dinBotResponseText = await getDinBotResponse(resp);
+    if (dinBotResponseText) {
+      reply = `(Redirecting to Din bot...)\r\n${dinBotResponseText}`;
+    }
   }
 
   console.log(`Reply: ${reply}`);
