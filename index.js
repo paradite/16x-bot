@@ -4,6 +4,7 @@ const { Client } = require('pg');
 const dayjs = require('dayjs');
 let isBetween = require('dayjs/plugin/isBetween');
 dayjs.extend(isBetween);
+const cron = require('node-cron');
 const client = new Client();
 
 client
@@ -297,5 +298,87 @@ function getCountStr(count) {
     return `${count}th`;
   }
 }
+
+// GraphQL query for LC daily question
+const dailyLCQuery = `
+query questionOfToday {
+        activeDailyCodingChallengeQuestion {
+            date
+            userStatus
+            link
+            question {
+                acRate
+                difficulty
+                freqBar
+                frontendQuestionId: questionFrontendId
+                isFavor
+                paidOnly: isPaidOnly
+                status
+                title
+                titleSlug
+                hasVideoSolution
+                hasSolution
+                topicTags {
+                    name
+                    id
+                    slug
+                }
+            }
+        }
+    }
+`;
+
+// POST request to get LC daily question
+const getLCQuestion = () => {
+  return axios
+  ({
+    url: 'https://leetcode.com/graphql',
+    method: 'post',
+    headers: {
+      'content-type': 'application/json',
+    },
+    data: {
+      query: dailyLCQuery,
+    },
+  });
+};
+
+let cronJob;
+
+// Command to start cron job
+// Definitely need to change this to an admin-only command
+bot.onText(/\/startDailyLCSchedule/, (msg) => {
+  const chatId = msg.chat.id;
+  const reply = `Starting daily LC schedule.`;
+  bot.sendMessage(chatId, reply);
+  console.log('start cron job');
+  // Just for testing every 5 seconds
+  // cronJob = cron.schedule('*/5 * * * * *', () => {
+  // Posts a daily question at 8:01AM 
+  cronJob = cron.schedule('01 8 * * *', () => {
+    getLCQuestion()
+      .then((response) => {
+        const data = response.data.data.activeDailyCodingChallengeQuestion;
+        const date = data.date;
+        const question = data.question;
+        const title = question.title;
+        const link = 'https://leetcode.com' + data.link;
+        const difficulty = question.difficulty;
+        const tags = question.topicTags.map((tag) => tag.name).join(', ');
+        const msg = `LC Daily Question\r\nDate: ${date}\r\n${title}\r\nDifficulty: ${difficulty}\r\nTags: ${tags}\r\n${link}`;
+        console.log(msg);
+        bot.sendMessage(chatId, msg);
+      });
+  });
+});
+
+// Command to end cron job
+bot.onText(/\/stopDailyLCSchedule/, (msg) => {
+  const chatId = msg.chat.id;
+  const reply = `Stopping daily LC schedule.`;
+  bot.sendMessage(chatId, reply);
+  console.log('stop cron job');
+  cronJob.stop();
+});
 
 console.log('Bot started');
