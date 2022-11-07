@@ -140,7 +140,7 @@ bot.on('message', async (msg) => {
 
     let statsStr = '';
     try {
-      let res = await client.query(
+      const res = await client.query(
         `SELECT COUNT(*) FROM ( SELECT DISTINCT a.username FROM lc_records as a WHERE a.qn_date = $1 and a.username != $2 ) as temp `,
         [dateStr, namePart]
       );
