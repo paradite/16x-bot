@@ -71,3 +71,6 @@ $ PGUSER=dbuser \
 ## Contribute
 
 PRs welcomed!
+
+- Add new terms: Update [docs/terms.json](https://github.com/paradite/16x-bot/blob/main/docs/terms.json)
+- Bug fixes and new features: Update [index.js](https://github.com/paradite/16x-bot/blob/main/index.js)
