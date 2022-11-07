@@ -51,10 +51,44 @@ function getNameForReply(msg) {
   return namePart;
 }
 
+async function getDinBotResponse(query) {
+  const dingBotUrl =
+    'https://asia-southeast1-free-jobs-253208.cloudfunctions.net/din';
+
+  const dingToken = process.env.DING_TOKEN;
+
+  try {
+    const response = await axios.post(
+      dingBotUrl,
+      {
+        message: query,
+        key: dingToken,
+      },
+      {
+        headers: {},
+      }
+    );
+
+    const data = response.data;
+
+    // validate data
+    if (!data || data.length > 500) {
+      console.log('response invalid');
+      console.log(data);
+      return undefined;
+    }
+    return data;
+  } catch (error) {
+    console.log('Din bot error');
+    console.log(error);
+    return undefined;
+  }
+}
+
 // Matches "/define [whatever]"
 // term definition
 // bot.onText(/\/define (.+)/, (msg, match) => {
-bot.onText(/!bot (.+)/, (msg, match) => {
+bot.onText(/!bot (.+)/, async (msg, match) => {
   // 'msg' is the received Message from Telegram
   // 'match' is the result of executing the regexp above on the text content
   // of the message
@@ -74,6 +108,12 @@ bot.onText(/!bot (.+)/, (msg, match) => {
     } else {
       reply = `${description}`;
     }
+  }
+
+  // redirect to Din bot
+  const dinBotResponseText = await getDinBotResponse(resp);
+  if (dinBotResponseText) {
+    reply = `(Redirecting to Din bot...)\r\n${dinBotResponseText}`;
   }
 
   console.log(`Reply: ${reply}`);
