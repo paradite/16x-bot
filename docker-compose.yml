@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  pgsql:
+    image: postgres:13.3-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - '5432:5432'
+    volumes: 
+      - pgsql-db:/var/lib/postgresql/data
+volumes:
+  pgsql-db:
+    driver: local
