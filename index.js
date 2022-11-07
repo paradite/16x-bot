@@ -72,7 +72,7 @@ async function getDinBotResponse(query) {
     const data = response.data;
 
     // validate data
-    if (!data || data.length > 500) {
+    if (!data || data.length > 600) {
       console.log('response invalid');
       console.log(data);
       return undefined;
