@@ -73,11 +73,13 @@ async function getDinBotResponse(query) {
 
     // validate data
     if (!data || data.length > 600) {
-      console.log('response invalid');
-      console.log(data);
+      console.log('Received invalid Din bot response');
+      if (data && data.length > 600) {
+        console.log(data.slice(600));
+      }
       return undefined;
     }
-    console.log('received Din bot response:');
+    console.log('Received Din bot response:');
     console.log(data);
     if (
       query.toLowerCase().includes('code') &&
@@ -96,9 +98,50 @@ ${data}
   }
 }
 
-// Matches "/define [whatever]"
+// summarize feature
+bot.onText(/(!summarize|!summarise)/, async (msg, match) => {
+  // 'msg' is the received Message from Telegram
+  // 'match' is the result of executing the regexp above on the text content
+  // of the message
+
+  const messageId = msg.message_id;
+  const chatId = msg.chat.id;
+
+  const replyToMessage = msg.reply_to_message;
+  if (!replyToMessage) {
+    console.log('Summarize: No replyToMessage');
+
+    return;
+  }
+
+  const resp = replyToMessage.text;
+
+  console.log(`Received Original: ${resp}`);
+
+  if (!resp) {
+    console.log('Summarize: No resp');
+    return;
+  }
+
+  let reply = `Failed to summarize.`;
+  // redirect to Din bot
+  const dinBotResponseText = await getDinBotResponse(
+    `summarise this\r\n${resp}`
+  );
+  if (dinBotResponseText) {
+    reply = `${dinBotResponseText}`;
+  }
+
+  console.log(`Reply Summary: ${reply}`);
+  // send back the matched "whatever" to the chat
+  bot.sendMessage(chatId, reply, {
+    reply_to_message_id: messageId,
+    disable_web_page_preview: true,
+    parse_mode: 'Markdown',
+  });
+});
+
 // term definition
-// bot.onText(/\/define (.+)/, (msg, match) => {
 bot.onText(/!bot ((?:.|\n|\r)+)/, async (msg, match) => {
   // 'msg' is the received Message from Telegram
   // 'match' is the result of executing the regexp above on the text content
