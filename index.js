@@ -392,4 +392,13 @@ bot.onText(/\/checkDailyLCSchedule/, async (msg) => {
   bot.sendMessage(chatId, reply);
 });
 
+// Echo
+bot.onText(/!echo/, async (msg) => {
+  const chatId = msg.chat.id;
+  console.log('chatId', chatId);
+  const reply = `Cron job status: ${cronStatus}`;
+  console.log(reply);
+  bot.sendMessage(chatId, reply);
+});
+
 console.log('Bot started');
