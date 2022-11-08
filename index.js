@@ -349,17 +349,26 @@ bot.onText(/\/startDailyLCSchedule/, (msg) => {
   // cronJob = cron.schedule('* * * * *', () => {
   // Posts a daily question at 8:01AM
   cronJob = cron.schedule('01 8 * * *', () => {
-    getLCQuestion().then((response) => {
-      const data = response.data.data.activeDailyCodingChallengeQuestion;
-      const date = data.date;
-      const question = data.question;
-      const title = question.title;
-      const link = 'https://leetcode.com' + data.link;
-      const difficulty = question.difficulty;
-      const msg = `*👨‍💻LC Daily Question👩‍💻*\r\n*Date:* ${date}\r\n*Title: *${title}\r\n*Difficulty:* ${difficulty}\r\n${link}`;
-      console.log(msg);
-      bot.sendMessage(chatId, msg, { parse_mode: 'Markdown' });
-    });
+    getLCQuestion()
+      .then((response) => {
+        const data = response.data.data.activeDailyCodingChallengeQuestion;
+        const date = data.date;
+        const question = data.question;
+        const title = question.title;
+        const link = 'https://leetcode.com' + data.link;
+        const difficulty = question.difficulty;
+        let diffIndicator = "";
+        if (difficulty === "Easy") {
+          diffIndicator = "🟩";
+        } else if (difficulty === "Medium") {
+          diffIndicator = "🟨";
+        } else if (difficulty === "Hard") {
+          diffIndicator = "🟥";
+        }
+        const msg = `*👨‍💻LC Daily Question👩‍💻*\r\n*Date:* ${date}\r\n*Title: *${title}\r\n*Difficulty:* ${difficulty} ${diffIndicator}\r\n${link}`;
+        console.log(msg);
+        bot.sendMessage(chatId, msg, {parse_mode:"Markdown"});
+      });
   });
 });
 
