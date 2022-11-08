@@ -101,7 +101,7 @@ ${data}
 }
 
 // summarize feature
-bot.onText(/!summarize|!summarise (.+)/, async (msg, match) => {
+bot.onText(/(?:!summarize|!summarise) (.+)/, async (msg, match) => {
   // 'msg' is the received Message from Telegram
   // 'match' is the result of executing the regexp above on the text content
   // of the message
