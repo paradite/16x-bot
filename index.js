@@ -322,8 +322,7 @@ query questionOfToday {
 
 // POST request to get LC daily question
 const getLCQuestion = () => {
-  return axios
-  ({
+  return axios({
     url: 'https://leetcode.com/graphql',
     method: 'post',
     headers: {
@@ -348,20 +347,19 @@ bot.onText(/\/startDailyLCSchedule/, (msg) => {
   console.log('Cron job has started');
   // Just for testing every 5 seconds
   // cronJob = cron.schedule('*/5 * * * * *', () => {
-  // Posts a daily question at 8:01AM 
+  // Posts a daily question at 8:01AM
   cronJob = cron.schedule('01 8 * * *', () => {
-    getLCQuestion()
-      .then((response) => {
-        const data = response.data.data.activeDailyCodingChallengeQuestion;
-        const date = data.date;
-        const question = data.question;
-        const title = question.title;
-        const link = 'https://leetcode.com' + data.link;
-        const difficulty = question.difficulty;
-        const msg = `*👨‍💻LC Daily Question👩‍💻*\r\n*Date:* ${date}\r\n*Title: *${title}\r\n*Difficulty:* ${difficulty}\r\n${link}`;
-        console.log(msg);
-        bot.sendMessage(chatId, msg, {parse_mode:"Markdown"});
-      });
+    getLCQuestion().then((response) => {
+      const data = response.data.data.activeDailyCodingChallengeQuestion;
+      const date = data.date;
+      const question = data.question;
+      const title = question.title;
+      const link = 'https://leetcode.com' + data.link;
+      const difficulty = question.difficulty;
+      const msg = `*👨‍💻LC Daily Question👩‍💻*\r\n*Date:* ${date}\r\n*Title: *${title}\r\n*Difficulty:* ${difficulty}\r\n${link}`;
+      console.log(msg);
+      bot.sendMessage(chatId, msg, { parse_mode: 'Markdown' });
+    });
   });
 });
 
@@ -382,6 +380,5 @@ bot.onText(/\/checkDailyLCSchedule/, (msg) => {
   console.log(reply);
   bot.sendMessage(chatId, reply);
 });
-
 
 console.log('Bot started');
