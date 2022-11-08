@@ -105,6 +105,10 @@ bot.onText(/!summarize|!summarise (.+)/, async (msg, match) => {
   // 'msg' is the received Message from Telegram
   // 'match' is the result of executing the regexp above on the text content
   // of the message
+  console.log('match', match);
+  console.log('match[0]', match[0]);
+  console.log('match[1]', match[1]);
+  console.log('match[2]', match[2]);
 
   const messageId = msg.message_id;
   const chatId = msg.chat.id;
