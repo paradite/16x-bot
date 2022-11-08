@@ -123,7 +123,7 @@ bot.onText(/!bot (.+)/, async (msg, match) => {
     // redirect to Din bot
     const dinBotResponseText = await getDinBotResponse(resp);
     if (dinBotResponseText) {
-      reply = `(Redirecting to Din bot...)\r\n${dinBotResponseText}`;
+      reply = `${dinBotResponseText}`;
     }
   }
 
