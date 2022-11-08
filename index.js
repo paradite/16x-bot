@@ -52,6 +52,8 @@ function getNameForReply(msg) {
 }
 
 async function getDinBotResponse(query) {
+  console.log('Sending to Din bot:');
+  console.log(query);
   const dinBotUrl =
     'https://asia-southeast1-free-jobs-253208.cloudfunctions.net/din';
 
@@ -99,7 +101,7 @@ ${data}
 }
 
 // summarize feature
-bot.onText(/(!summarize|!summarise)/, async (msg, match) => {
+bot.onText(/(?:!summarize|!summarise) (.+)/, async (msg, match) => {
   // 'msg' is the received Message from Telegram
   // 'match' is the result of executing the regexp above on the text content
   // of the message
@@ -132,7 +134,7 @@ bot.onText(/(!summarize|!summarise)/, async (msg, match) => {
   let reply = `Failed to summarize.`;
   // redirect to Din bot
   const dinBotResponseText = await getDinBotResponse(
-    `summarise this\r\n${resp}`
+    `summarise ${match ? match : 'this'}\r\n${resp}`
   );
   if (dinBotResponseText) {
     reply = `${dinBotResponseText}`;
