@@ -158,6 +158,7 @@ bot.onText(/!bot ((?:.|\n|\r)+)/, async (msg, match) => {
 
   const messageId = msg.message_id;
   const chatId = msg.chat.id;
+  console.log('chatId', chatId);
   const namePart = getNameForReply(msg);
   const resp = match[1]; // the captured "whatever"
 
@@ -341,6 +342,7 @@ let cronStatus;
 // Definitely need to change this to an admin-only command
 bot.onText(/\/startDailyLCSchedule/, (msg) => {
   const chatId = msg.chat.id;
+  console.log('chatId', chatId);
   const reply = `Starting daily LC schedule.`;
   bot.sendMessage(chatId, reply);
   cronStatus = true;
@@ -349,26 +351,25 @@ bot.onText(/\/startDailyLCSchedule/, (msg) => {
   // cronJob = cron.schedule('* * * * *', () => {
   // Posts a daily question at 8:01AM
   cronJob = cron.schedule('01 8 * * *', () => {
-    getLCQuestion()
-      .then((response) => {
-        const data = response.data.data.activeDailyCodingChallengeQuestion;
-        const date = data.date;
-        const question = data.question;
-        const title = question.title;
-        const link = 'https://leetcode.com' + data.link;
-        const difficulty = question.difficulty;
-        let diffIndicator = "";
-        if (difficulty === "Easy") {
-          diffIndicator = "🟩";
-        } else if (difficulty === "Medium") {
-          diffIndicator = "🟨";
-        } else if (difficulty === "Hard") {
-          diffIndicator = "🟥";
-        }
-        const msg = `*👨‍💻LC Daily Question👩‍💻*\r\n*Date:* ${date}\r\n*Title: *${title}\r\n*Difficulty:* ${difficulty} ${diffIndicator}\r\n${link}`;
-        console.log(msg);
-        bot.sendMessage(chatId, msg, {parse_mode:"Markdown"});
-      });
+    getLCQuestion().then((response) => {
+      const data = response.data.data.activeDailyCodingChallengeQuestion;
+      const date = data.date;
+      const question = data.question;
+      const title = question.title;
+      const link = 'https://leetcode.com' + data.link;
+      const difficulty = question.difficulty;
+      let diffIndicator = '';
+      if (difficulty === 'Easy') {
+        diffIndicator = '🟩';
+      } else if (difficulty === 'Medium') {
+        diffIndicator = '🟨';
+      } else if (difficulty === 'Hard') {
+        diffIndicator = '🟥';
+      }
+      const msg = `*👨‍💻LC Daily Question👩‍💻*\r\n*Date:* ${date}\r\n*Title: *${title}\r\n*Difficulty:* ${difficulty} ${diffIndicator}\r\n${link}`;
+      console.log(msg);
+      bot.sendMessage(chatId, msg, { parse_mode: 'Markdown' });
+    });
   });
 });
 
@@ -385,6 +386,7 @@ bot.onText(/\/stopDailyLCSchedule/, (msg) => {
 // Check cron job schedule
 bot.onText(/\/checkDailyLCSchedule/, (msg) => {
   const chatId = msg.chat.id;
+  console.log('chatId', chatId);
   const reply = `Cron job status: ${cronStatus}`;
   console.log(reply);
   bot.sendMessage(chatId, reply);
