@@ -158,7 +158,6 @@ bot.onText(/!bot ((?:.|\n|\r)+)/, async (msg, match) => {
 
   const messageId = msg.message_id;
   const chatId = msg.chat.id;
-  console.log('chatId', chatId);
   const namePart = getNameForReply(msg);
   const resp = match[1]; // the captured "whatever"
 
@@ -342,9 +341,11 @@ let cronStatus;
 // Definitely need to change this to an admin-only command
 bot.onText(/\/startDailyLCSchedule/, async (msg) => {
   const chatId = msg.chat.id;
-  console.log('chatId', chatId);
+  const messageId = msg.message_id;
   const reply = `Starting daily LC schedule.`;
-  bot.sendMessage(chatId, reply);
+  bot.sendMessage(chatId, reply, {
+    reply_to_message_id: messageId,
+  });
   cronStatus = true;
   console.log('Cron job has started');
   // Just for testing every 5 seconds
@@ -376,8 +377,11 @@ bot.onText(/\/startDailyLCSchedule/, async (msg) => {
 // Command to end cron job
 bot.onText(/\/stopDailyLCSchedule/, async (msg) => {
   const chatId = msg.chat.id;
+  const messageId = msg.message_id;
   const reply = `Stopping daily LC schedule.`;
-  bot.sendMessage(chatId, reply);
+  bot.sendMessage(chatId, reply, {
+    reply_to_message_id: messageId,
+  });
   cronStatus = false;
   console.log('Cron job has been stopped');
   cronJob.stop();
@@ -386,19 +390,12 @@ bot.onText(/\/stopDailyLCSchedule/, async (msg) => {
 // Check cron job schedule
 bot.onText(/\/checkDailyLCSchedule/, async (msg) => {
   const chatId = msg.chat.id;
-  console.log('chatId', chatId);
+  const messageId = msg.message_id;
   const reply = `Cron job status: ${cronStatus}`;
   console.log(reply);
-  bot.sendMessage(chatId, reply);
-});
-
-// Echo
-bot.onText(/!echo/, async (msg) => {
-  const chatId = msg.chat.id;
-  console.log('chatId', chatId);
-  const reply = `Cron job status: ${cronStatus}`;
-  console.log(reply);
-  bot.sendMessage(chatId, reply);
+  bot.sendMessage(chatId, reply, {
+    reply_to_message_id: messageId,
+  });
 });
 
 console.log('Bot started');
