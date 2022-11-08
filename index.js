@@ -315,14 +315,6 @@ query questionOfToday {
                 paidOnly: isPaidOnly
                 status
                 title
-                titleSlug
-                hasVideoSolution
-                hasSolution
-                topicTags {
-                    name
-                    id
-                    slug
-                }
             }
         }
     }
@@ -344,6 +336,7 @@ const getLCQuestion = () => {
 };
 
 let cronJob;
+let cronStatus;
 
 // Command to start cron job
 // Definitely need to change this to an admin-only command
@@ -351,7 +344,8 @@ bot.onText(/\/startDailyLCSchedule/, (msg) => {
   const chatId = msg.chat.id;
   const reply = `Starting daily LC schedule.`;
   bot.sendMessage(chatId, reply);
-  console.log('start cron job');
+  cronStatus = true;
+  console.log('Cron job has started');
   // Just for testing every 5 seconds
   // cronJob = cron.schedule('*/5 * * * * *', () => {
   // Posts a daily question at 8:01AM 
@@ -364,10 +358,9 @@ bot.onText(/\/startDailyLCSchedule/, (msg) => {
         const title = question.title;
         const link = 'https://leetcode.com' + data.link;
         const difficulty = question.difficulty;
-        const tags = question.topicTags.map((tag) => tag.name).join(', ');
-        const msg = `LC Daily Question\r\nDate: ${date}\r\n${title}\r\nDifficulty: ${difficulty}\r\nTags: ${tags}\r\n${link}`;
+        const msg = `*👨‍💻LC Daily Question👩‍💻*\r\n*Date:* ${date}\r\n*Title: *${title}\r\n*Difficulty:* ${difficulty}\r\n${link}`;
         console.log(msg);
-        bot.sendMessage(chatId, msg);
+        bot.sendMessage(chatId, msg, {parse_mode:"Markdown"});
       });
   });
 });
@@ -377,8 +370,18 @@ bot.onText(/\/stopDailyLCSchedule/, (msg) => {
   const chatId = msg.chat.id;
   const reply = `Stopping daily LC schedule.`;
   bot.sendMessage(chatId, reply);
-  console.log('stop cron job');
+  cronStatus = false;
+  console.log('Cron job has been stopped');
   cronJob.stop();
 });
+
+// Check cron job schedule
+bot.onText(/\/checkDailyLCSchedule/, (msg) => {
+  const chatId = msg.chat.id;
+  const reply = `Cron job status: ${cronStatus}`;
+  console.log(reply);
+  bot.sendMessage(chatId, reply);
+});
+
 
 console.log('Bot started');
