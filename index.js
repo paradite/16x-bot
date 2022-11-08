@@ -385,9 +385,17 @@ bot.onText(/\/stopDailyLCSchedule/, (msg) => {
 // Check cron job schedule
 bot.onText(/\/checkDailyLCSchedule/, (msg) => {
   const chatId = msg.chat.id;
+  const msgThreadId = msg.message_thread_id;
   const reply = `Cron job status: ${cronStatus}`;
   console.log(reply);
-  bot.sendMessage(chatId, reply);
+  //console.log(msgThreadId); // Should be undefined if msg is not sent from a topic
+
+  if (msg.chat.is_forum){
+    bot.sendMessage(chatId, message_thread_id, reply);
+  }
+  else{
+    bot.sendMessage(chatId, reply);
+  }
 });
 
 console.log('Bot started');
