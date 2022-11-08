@@ -134,7 +134,7 @@ bot.onText(/!summarize|!summarise (.+)/, async (msg, match) => {
   let reply = `Failed to summarize.`;
   // redirect to Din bot
   const dinBotResponseText = await getDinBotResponse(
-    `summarise ${match ? match : 'this'}\r\n${resp}`
+    `summarise ${match[1] ? match[1] : 'this'}\r\n${resp}`
   );
   if (dinBotResponseText) {
     reply = `${dinBotResponseText}`;
