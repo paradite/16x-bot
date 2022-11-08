@@ -99,7 +99,7 @@ ${data}
 // Matches "/define [whatever]"
 // term definition
 // bot.onText(/\/define (.+)/, (msg, match) => {
-bot.onText(/!bot (.+)/, async (msg, match) => {
+bot.onText(/!bot ((?:.|\n|\r)+)/, async (msg, match) => {
   // 'msg' is the received Message from Telegram
   // 'match' is the result of executing the regexp above on the text content
   // of the message
