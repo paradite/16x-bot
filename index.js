@@ -369,7 +369,10 @@ bot.onText(/\/startDailyLCSchedule/, async (msg) => {
       }
       const msg = `*👨‍💻LC Daily Question👩‍💻*\r\n*Date:* ${date}\r\n*Title: *${title}\r\n*Difficulty:* ${difficulty} ${diffIndicator}\r\n${link}`;
       console.log(msg);
-      bot.sendMessage(chatId, msg, { parse_mode: 'Markdown' });
+      bot.sendMessage(chatId, msg, {
+        parse_mode: 'Markdown',
+        reply_to_message_id: messageId,
+      });
     });
   });
 });
