@@ -114,6 +114,7 @@ bot.onText(/(!summarize|!summarise)/, async (msg, match) => {
     return;
   }
 
+  const replyToMessageId = replyToMessage.message_id;
   const resp = replyToMessage.text;
 
   console.log(`Received Original: ${resp}`);
@@ -135,7 +136,7 @@ bot.onText(/(!summarize|!summarise)/, async (msg, match) => {
   console.log(`Reply Summary: ${reply}`);
   // send back the matched "whatever" to the chat
   bot.sendMessage(chatId, reply, {
-    reply_to_message_id: messageId,
+    reply_to_message_id: replyToMessageId,
     disable_web_page_preview: true,
     parse_mode: 'Markdown',
   });
