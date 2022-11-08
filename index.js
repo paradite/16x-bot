@@ -340,7 +340,7 @@ let cronStatus;
 
 // Command to start cron job
 // Definitely need to change this to an admin-only command
-bot.onText(/\/startDailyLCSchedule/, (msg) => {
+bot.onText(/\/startDailyLCSchedule/, async (msg) => {
   const chatId = msg.chat.id;
   console.log('chatId', chatId);
   const reply = `Starting daily LC schedule.`;
@@ -374,7 +374,7 @@ bot.onText(/\/startDailyLCSchedule/, (msg) => {
 });
 
 // Command to end cron job
-bot.onText(/\/stopDailyLCSchedule/, (msg) => {
+bot.onText(/\/stopDailyLCSchedule/, async (msg) => {
   const chatId = msg.chat.id;
   const reply = `Stopping daily LC schedule.`;
   bot.sendMessage(chatId, reply);
@@ -384,7 +384,7 @@ bot.onText(/\/stopDailyLCSchedule/, (msg) => {
 });
 
 // Check cron job schedule
-bot.onText(/\/checkDailyLCSchedule/, (msg) => {
+bot.onText(/\/checkDailyLCSchedule/, async (msg) => {
   const chatId = msg.chat.id;
   console.log('chatId', chatId);
   const reply = `Cron job status: ${cronStatus}`;
