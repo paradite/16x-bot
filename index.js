@@ -4,6 +4,7 @@ const { Client } = require('pg');
 const dayjs = require('dayjs');
 let isBetween = require('dayjs/plugin/isBetween');
 dayjs.extend(isBetween);
+const cron = require('node-cron');
 const client = new Client();
 
 client
@@ -297,5 +298,90 @@ function getCountStr(count) {
     return `${count}th`;
   }
 }
+
+// GraphQL query for LC daily question
+const dailyLCQuery = `
+query questionOfToday {
+        activeDailyCodingChallengeQuestion {
+            date
+            userStatus
+            link
+            question {
+                acRate
+                difficulty
+                freqBar
+                frontendQuestionId: questionFrontendId
+                isFavor
+                paidOnly: isPaidOnly
+                status
+                title
+            }
+        }
+    }
+`;
+
+// POST request to get LC daily question
+const getLCQuestion = () => {
+  return axios
+  ({
+    url: 'https://leetcode.com/graphql',
+    method: 'post',
+    headers: {
+      'content-type': 'application/json',
+    },
+    data: {
+      query: dailyLCQuery,
+    },
+  });
+};
+
+let cronJob;
+let cronStatus;
+
+// Command to start cron job
+// Definitely need to change this to an admin-only command
+bot.onText(/\/startDailyLCSchedule/, (msg) => {
+  const chatId = msg.chat.id;
+  const reply = `Starting daily LC schedule.`;
+  bot.sendMessage(chatId, reply);
+  cronStatus = true;
+  console.log('Cron job has started');
+  // Just for testing every 5 seconds
+  // cronJob = cron.schedule('*/5 * * * * *', () => {
+  // Posts a daily question at 8:01AM 
+  cronJob = cron.schedule('01 8 * * *', () => {
+    getLCQuestion()
+      .then((response) => {
+        const data = response.data.data.activeDailyCodingChallengeQuestion;
+        const date = data.date;
+        const question = data.question;
+        const title = question.title;
+        const link = 'https://leetcode.com' + data.link;
+        const difficulty = question.difficulty;
+        const msg = `*👨‍💻LC Daily Question👩‍💻*\r\n*Date:* ${date}\r\n*Title: *${title}\r\n*Difficulty:* ${difficulty}\r\n${link}`;
+        console.log(msg);
+        bot.sendMessage(chatId, msg, {parse_mode:"Markdown"});
+      });
+  });
+});
+
+// Command to end cron job
+bot.onText(/\/stopDailyLCSchedule/, (msg) => {
+  const chatId = msg.chat.id;
+  const reply = `Stopping daily LC schedule.`;
+  bot.sendMessage(chatId, reply);
+  cronStatus = false;
+  console.log('Cron job has been stopped');
+  cronJob.stop();
+});
+
+// Check cron job schedule
+bot.onText(/\/checkDailyLCSchedule/, (msg) => {
+  const chatId = msg.chat.id;
+  const reply = `Cron job status: ${cronStatus}`;
+  console.log(reply);
+  bot.sendMessage(chatId, reply);
+});
+
 
 console.log('Bot started');
