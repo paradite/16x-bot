@@ -339,51 +339,59 @@ let cronStatus;
 
 // Command to start cron job
 // Definitely need to change this to an admin-only command
-bot.onText(/\/startDailyLCSchedule/, (msg) => {
+bot.onText(/\/startDailyLCSchedule/, async (msg) => {
   const chatId = msg.chat.id;
+  const messageId = msg.message_id;
   const reply = `Starting daily LC schedule.`;
-  bot.sendMessage(chatId, reply);
+  bot.sendMessage(chatId, reply, {
+    reply_to_message_id: messageId,
+  });
   cronStatus = true;
   console.log('Cron job has started');
   // Just for testing every 5 seconds
   // cronJob = cron.schedule('* * * * *', () => {
   // Posts a daily question at 8:01AM
   cronJob = cron.schedule('01 8 * * *', () => {
-    getLCQuestion()
-      .then((response) => {
-        const data = response.data.data.activeDailyCodingChallengeQuestion;
-        const date = data.date;
-        const question = data.question;
-        const title = question.title;
-        const link = 'https://leetcode.com' + data.link;
-        const difficulty = question.difficulty;
-        let diffIndicator = "";
-        if (difficulty === "Easy") {
-          diffIndicator = "🟩";
-        } else if (difficulty === "Medium") {
-          diffIndicator = "🟨";
-        } else if (difficulty === "Hard") {
-          diffIndicator = "🟥";
-        }
-        const msg = `*👨‍💻LC Daily Question👩‍💻*\r\n*Date:* ${date}\r\n*Title: *${title}\r\n*Difficulty:* ${difficulty} ${diffIndicator}\r\n${link}`;
-        console.log(msg);
-        bot.sendMessage(chatId, msg, {parse_mode:"Markdown"});
+    getLCQuestion().then((response) => {
+      const data = response.data.data.activeDailyCodingChallengeQuestion;
+      const date = data.date;
+      const question = data.question;
+      const title = question.title;
+      const link = 'https://leetcode.com' + data.link;
+      const difficulty = question.difficulty;
+      let diffIndicator = '';
+      if (difficulty === 'Easy') {
+        diffIndicator = '🟩';
+      } else if (difficulty === 'Medium') {
+        diffIndicator = '🟨';
+      } else if (difficulty === 'Hard') {
+        diffIndicator = '🟥';
+      }
+      const msg = `*👨‍💻LC Daily Question👩‍💻*\r\n*Date:* ${date}\r\n*Title: *${title}\r\n*Difficulty:* ${difficulty} ${diffIndicator}\r\n${link}`;
+      console.log(msg);
+      bot.sendMessage(chatId, msg, {
+        parse_mode: 'Markdown',
+        reply_to_message_id: messageId,
       });
+    });
   });
 });
 
 // Command to end cron job
-bot.onText(/\/stopDailyLCSchedule/, (msg) => {
+bot.onText(/\/stopDailyLCSchedule/, async (msg) => {
   const chatId = msg.chat.id;
+  const messageId = msg.message_id;
   const reply = `Stopping daily LC schedule.`;
-  bot.sendMessage(chatId, reply);
+  bot.sendMessage(chatId, reply, {
+    reply_to_message_id: messageId,
+  });
   cronStatus = false;
   console.log('Cron job has been stopped');
   cronJob.stop();
 });
 
 // Check cron job schedule
-bot.onText(/\/checkDailyLCSchedule/, (msg) => {
+bot.onText(/\/checkDailyLCSchedule/, async (msg) => {
   const chatId = msg.chat.id;
   const msgThreadId = msg.message_thread_id;
   const reply = `Cron job status: ${cronStatus}`;
