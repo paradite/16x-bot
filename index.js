@@ -115,7 +115,12 @@ bot.onText(/(!summarize|!summarise)/, async (msg, match) => {
   }
 
   const replyToMessageId = replyToMessage.message_id;
-  const resp = replyToMessage.text;
+  let resp = replyToMessage.text;
+
+  // handle caption for other types
+  if (!resp) {
+    resp = replyToMessage.caption;
+  }
 
   console.log(`Received Original: ${resp}`);
 
