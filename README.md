@@ -28,6 +28,18 @@ Send a screenshot with caption containing "#LCYYYYMMDD", eg. `#LC20221107`
   <img src="https://github.com/paradite/16x-bot/blob/main/screenshots/leetcode.png?raw=true" alt="Leetcode Daily Challenge Response" width="600"/>
 </p>
 
+**4. Leetcode Daily Challenge Reminder** (by [Ashton](https://github.com/hahaashton1))
+
+<p float="left">
+  <img src="https://github.com/paradite/16x-bot/blob/main/screenshots/lcdaily.png?raw=true" alt="Leetcode Daily Challenge Reminder" width="600"/>
+</p>
+
+**5. Proxy for Din Bot**
+
+<p float="left">
+  <img src="https://github.com/paradite/16x-bot/blob/main/screenshots/din.png?raw=true" alt="Proxy for Din Bot" width="600"/>
+</p>
+
 ## Using the bot
 
 **1. Use bot in a group chat**
