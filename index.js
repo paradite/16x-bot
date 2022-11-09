@@ -52,7 +52,7 @@ function getNameForReply(msg) {
   return namePart;
 }
 
-async function getDinBotResponse(query) {
+async function getDinBotResponse(query, namePart) {
   console.log('Sending to Din bot:');
   console.log(query);
   const dinBotUrl =
@@ -66,6 +66,7 @@ async function getDinBotResponse(query) {
       {
         message: query,
         key: dinToken,
+        user: namePart,
       },
       {
         headers: {},
@@ -173,7 +174,7 @@ bot.onText(/!bot ((?:.|\n|\r)+)/, async (msg, match) => {
     }
   } else {
     // redirect to Din bot
-    const dinBotResponseText = await getDinBotResponse(resp);
+    const dinBotResponseText = await getDinBotResponse(resp, namePart);
     if (dinBotResponseText) {
       reply = `${dinBotResponseText}`;
     }
