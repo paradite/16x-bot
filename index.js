@@ -393,11 +393,12 @@ bot.onText(/\/stopDailyLCSchedule/, async (msg) => {
 // Check cron job schedule
 bot.onText(/\/checkDailyLCSchedule/, async (msg) => {
   const chatId = msg.chat.id;
-  const messageId = msg.message_id;
+  const msgThreadId = msg.message_thread_id;
   const reply = `Cron job status: ${cronStatus}`;
   console.log(reply);
+
   bot.sendMessage(chatId, reply, {
-    reply_to_message_id: messageId,
+    message_thread_id: msgThreadId,
   });
 });
 
