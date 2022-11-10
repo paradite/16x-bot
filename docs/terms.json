@@ -1,4 +1,14 @@
 {
+  "ac": [
+    "AC (Accepted/All Correct/All Clear) means yours solution passed the internal test cases. It is a term for online judge(OJ)."
+  ],
+  "wa": ["Wrong Answer. It is a term for online judge(OJ)."],
+  "tle": ["Time Limit Exceed. It is a term for online judge(OJ)."],
+  "mle": ["Memory Limit Exceed. It is a term for online judge(OJ)."],
+  "oj": [
+    "An online judge is an online system to test programs in programming contests or for practices. Examples include Codeforces, Kattis, UVa, and Leetcode.",
+    "https://codeforces.com/blog/entry/93527"
+  ],
   "clrs": [
     "Introduction to Algorithms is a book on computer programming. Its fame has led to the common use of the abbreviation \"CLRS\" (Cormen, Leiserson, Rivest, Stein).",
     "https://en.wikipedia.org/wiki/Introduction_to_Algorithms"
