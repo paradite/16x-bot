@@ -372,9 +372,9 @@ bot.onText(/\/startDailyLCSchedule/, async (msg) => {
   chatIdCronStatusMap[chatId] = true;
   console.log('Cron job has started');
   // Just for testing every 5 seconds
-  cronJob = cron.schedule('* * * * *', () => {
-    // Posts a daily question at 8:01AM
-    // cronJob = cron.schedule('01 8 * * *', () => {
+  // cronJob = cron.schedule('* * * * *', () => {
+  // Posts a daily question at 8:01AM
+  cronJob = cron.schedule('01 8 * * *', () => {
     getLCQuestion()
       .then((result) => {
         console.log(result);
