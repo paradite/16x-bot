@@ -322,8 +322,8 @@ query questionOfToday {
 `;
 
 // POST request to get LC daily question
-const getLCQuestion = () => {
-  return axios({
+const getLCQuestion = async () => {
+  const response = await axios({
     url: 'https://leetcode.com/graphql',
     method: 'post',
     headers: {
@@ -333,6 +333,22 @@ const getLCQuestion = () => {
       query: dailyLCQuery,
     },
   });
+  const data = response.data.data.activeDailyCodingChallengeQuestion;
+  const date = data.date;
+  const question = data.question;
+  const title = question.title;
+  const link = 'https://leetcode.com' + data.link;
+  const difficulty = question.difficulty;
+  let diffIndicator = '';
+  if (difficulty === 'Easy') {
+    diffIndicator = '🟩';
+  } else if (difficulty === 'Medium') {
+    diffIndicator = '🟨';
+  } else if (difficulty === 'Hard') {
+    diffIndicator = '🟥';
+  }
+  const msg = `*👨‍💻LC Daily Question👩‍💻*\r\n*Date:* ${date}\r\n*Title: *${title}\r\n*Difficulty:* ${difficulty} ${diffIndicator}\r\n${link}`;
+  return msg;
 };
 
 let cronJob;
@@ -356,30 +372,19 @@ bot.onText(/\/startDailyLCSchedule/, async (msg) => {
   chatIdCronStatusMap[chatId] = true;
   console.log('Cron job has started');
   // Just for testing every 5 seconds
-  // cronJob = cron.schedule('* * * * *', () => {
+  cronJob = cron.schedule('* * * * *', () => {
   // Posts a daily question at 8:01AM
-  cronJob = cron.schedule('01 8 * * *', () => {
-    getLCQuestion().then((response) => {
-      const data = response.data.data.activeDailyCodingChallengeQuestion;
-      const date = data.date;
-      const question = data.question;
-      const title = question.title;
-      const link = 'https://leetcode.com' + data.link;
-      const difficulty = question.difficulty;
-      let diffIndicator = '';
-      if (difficulty === 'Easy') {
-        diffIndicator = '🟩';
-      } else if (difficulty === 'Medium') {
-        diffIndicator = '🟨';
-      } else if (difficulty === 'Hard') {
-        diffIndicator = '🟥';
-      }
-      const msg = `*👨‍💻LC Daily Question👩‍💻*\r\n*Date:* ${date}\r\n*Title: *${title}\r\n*Difficulty:* ${difficulty} ${diffIndicator}\r\n${link}`;
-      console.log(msg);
-      bot.sendMessage(chatId, msg, {
-        parse_mode: 'Markdown',
+  // cronJob = cron.schedule('01 8 * * *', () => {
+    getLCQuestion()
+    .then((result) => {
+      console.log(result);
+      bot.sendMessage(chatId, result, {
         message_thread_id: msgThreadId,
+        parse_mode: 'Markdown',
       });
+    })
+    .catch((error) => {
+      console.error(error);
     });
   });
 });
@@ -406,6 +411,28 @@ bot.onText(/\/checkDailyLCSchedule/, async (msg) => {
 
   bot.sendMessage(chatId, reply, {
     message_thread_id: msgThreadId,
+  });
+});
+
+// Command for public user to trigger daily LC question reply
+bot.onText(/\/lc/, async (msg) => {
+  const chatId = msg.chat.id;
+  const msgThreadId = msg.message_thread_id;
+  const messageId = msg.message_id;
+  const namePart = getNameForReply(msg);
+
+  getLCQuestion()
+  .then((result) => {
+    console.log(result);
+    const reply = `Hello ${namePart}! Here's today's question:\r\n\r\n${result}`;
+    bot.sendMessage(chatId, reply, {
+      message_thread_id: msgThreadId,
+      reply_to_message_id: messageId,
+      parse_mode: 'Markdown',
+    });
+  })
+  .catch((error) => {
+    console.error(error);
   });
 });
 
