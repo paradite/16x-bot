@@ -373,19 +373,19 @@ bot.onText(/\/startDailyLCSchedule/, async (msg) => {
   console.log('Cron job has started');
   // Just for testing every 5 seconds
   cronJob = cron.schedule('* * * * *', () => {
-  // Posts a daily question at 8:01AM
-  // cronJob = cron.schedule('01 8 * * *', () => {
+    // Posts a daily question at 8:01AM
+    // cronJob = cron.schedule('01 8 * * *', () => {
     getLCQuestion()
-    .then((result) => {
-      console.log(result);
-      bot.sendMessage(chatId, result, {
-        message_thread_id: msgThreadId,
-        parse_mode: 'Markdown',
+      .then((result) => {
+        console.log(result);
+        bot.sendMessage(chatId, result, {
+          message_thread_id: msgThreadId,
+          parse_mode: 'Markdown',
+        });
+      })
+      .catch((error) => {
+        console.error(error);
       });
-    })
-    .catch((error) => {
-      console.error(error);
-    });
   });
 });
 
@@ -415,25 +415,25 @@ bot.onText(/\/checkDailyLCSchedule/, async (msg) => {
 });
 
 // Command for public user to trigger daily LC question reply
-bot.onText(/\/lc/, async (msg) => {
+bot.onText(/!lc/, async (msg) => {
   const chatId = msg.chat.id;
   const msgThreadId = msg.message_thread_id;
   const messageId = msg.message_id;
   const namePart = getNameForReply(msg);
 
   getLCQuestion()
-  .then((result) => {
-    console.log(result);
-    const reply = `Hello ${namePart}! Here's today's question:\r\n\r\n${result}`;
-    bot.sendMessage(chatId, reply, {
-      message_thread_id: msgThreadId,
-      reply_to_message_id: messageId,
-      parse_mode: 'Markdown',
+    .then((result) => {
+      console.log(result);
+      const reply = `Hello ${namePart}! Here's today's question:\r\n\r\n${result}`;
+      bot.sendMessage(chatId, reply, {
+        message_thread_id: msgThreadId,
+        reply_to_message_id: messageId,
+        parse_mode: 'Markdown',
+      });
+    })
+    .catch((error) => {
+      console.error(error);
     });
-  })
-  .catch((error) => {
-    console.error(error);
-  });
 });
 
 console.log('Bot started');
