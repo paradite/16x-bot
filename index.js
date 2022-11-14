@@ -52,6 +52,29 @@ function getNameForReply(msg) {
   return namePart;
 }
 
+// Check if admin
+function checkAdmin(msg) {
+  // Usernames are case sensitive
+  const admins = [
+    'Hahaashton',
+    'paradite',
+    'Mr_Marcia_Ong',
+    'n1ds4n',
+    'GilbertZhuo',
+  ];
+  const chatId = msg.chat.id;
+  const msgThreadId = msg.message_thread_id;
+  const messageId = msg.message_id;
+  if (!admins.includes(msg.from.username)) {
+    bot.sendMessage(chatId, 'You are not an admin to execute this command', {
+      message_thread_id: msgThreadId,
+      reply_to_message_id: messageId,
+    });
+    return false;
+  }
+  return true;
+}
+
 async function getDinBotResponse(query, namePart) {
   console.log('Sending to Din bot:');
   console.log(query);
@@ -357,6 +380,9 @@ const chatIdCronStatusMap = {};
 // Command to start cron job
 // Definitely need to change this to an admin-only command
 bot.onText(/\/startDailyLCSchedule/, async (msg) => {
+  if (!checkAdmin(msg)) {
+    return;
+  }
   const chatId = msg.chat.id;
   const msgThreadId = msg.message_thread_id;
   if (chatIdCronStatusMap[chatId]) {
@@ -391,6 +417,9 @@ bot.onText(/\/startDailyLCSchedule/, async (msg) => {
 
 // Command to end cron job
 bot.onText(/\/stopDailyLCSchedule/, async (msg) => {
+  if (!checkAdmin(msg)) {
+    return;
+  }
   const chatId = msg.chat.id;
   const msgThreadId = msg.message_thread_id;
   const reply = `Stopping daily LC schedule.`;
@@ -404,6 +433,9 @@ bot.onText(/\/stopDailyLCSchedule/, async (msg) => {
 
 // Check cron job schedule
 bot.onText(/\/checkDailyLCSchedule/, async (msg) => {
+  if (!checkAdmin(msg)) {
+    return;
+  }
   const chatId = msg.chat.id;
   const msgThreadId = msg.message_thread_id;
   const reply = `Cron job status for ${chatId}: ${chatIdCronStatusMap[chatId]}`;
