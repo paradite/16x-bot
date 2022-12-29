@@ -447,7 +447,7 @@ bot.onText(/\/checkDailyLCSchedule/, async (msg) => {
 });
 
 // Command for public user to trigger daily LC question reply
-bot.onText(/!lc/, async (msg) => {
+bot.onText(/!lc/i, async (msg) => {
   const chatId = msg.chat.id;
   const msgThreadId = msg.message_thread_id;
   const messageId = msg.message_id;
