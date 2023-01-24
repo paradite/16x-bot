@@ -250,7 +250,7 @@ bot.on('message', async (msg) => {
     if (match) {
       resp = match[0].substring(3, 11); // find the YYYYMMDD
     } else if (matchTT) {
-      resp = matchTT[0].substring(5, 11); // find the YYYYMMDD
+      resp = matchTT[0].substring(5, 13); // find the YYYYMMDD
     }
     console.log(`Received YYYYMMDD: ${resp}`);
     const chatId = msg.chat.id;
@@ -262,12 +262,9 @@ bot.on('message', async (msg) => {
     let rightBound = undefined;
     if (submissionHour < 8) {
       // If the time of submission is before 8am, the submission must be for yesterday's date
-      leftBound = dayjs()
-        .hour(8)
-        .minute(0)
-        .second(0)
-        .millisecond(0)
-        .subtract(1, 'day');
+      // prettier-ignore
+      leftBound = dayjs().hour(8).minute(0).second(0).millisecond(0).subtract(1, 'day');
+      // prettier-ignore
       rightBound = dayjs().hour(8).minute(0).second(0).millisecond(0);
     } else {
       // If the time of submission is after 8am, submission must be for today's date
@@ -279,7 +276,7 @@ bot.on('message', async (msg) => {
         .millisecond(0)
         .add(1, 'day');
     }
-    const submissionDate = dayjs(resp, 'YYYYMMDD').hour(submissionHour);
+    const submissionDate = dayjs(resp, 'YYYYMMDD').hour(8);
 
     if (
       match &&
