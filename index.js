@@ -236,7 +236,6 @@ bot.onText(
     });
   }
 );
-
 // motivational reply to encourage ppl to carry on joining the LC party
 bot.on('message', async (msg) => {
   // console.log(msg)
@@ -252,10 +251,10 @@ bot.on('message', async (msg) => {
     const chatId = msg.chat.id;
     const namePart = getNameForReply(msg);
 
-    let reply = `Sorry ${namePart}, the date you submitted is not valid. Please use current date with format #LCYYYYMMDD. 😊`;
+    let reply = `Sorry ${namePart}, the date you submitted is not valid. Please use current date with format #LCYYYYMMDD. 😊\n\n Note that LC submission acceptance for a date starts only after 8am. If you are submitting before 8am, use yesterday's date. If you are using a time travel token, use the date of the problem with format #LCTTYYYYMMDD.`;
     const submissionHour = dayjs().hour();
-    let leftBound = null;
-    let rightBound = null;
+    let leftBound = undefined;
+    let rightBound = undefined;
     if (submissionHour < 8) {
       // If the time of submission is before 8am, the submission must be for yesterday's date
       leftBound = dayjs()
