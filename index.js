@@ -246,7 +246,12 @@ bot.on('message', async (msg) => {
     if (!match && !matchTT) {
       return;
     }
-    const resp = match[0].substring(3, 11); // find the YYYYMMDD
+    let resp;
+    if (match) {
+      resp = match[0].substring(3, 11); // find the YYYYMMDD
+    } else if (matchTT) {
+      resp = match[0].substring(5, 11); // find the YYYYMMDD
+    }
     console.log(`Received YYYYMMDD: ${resp}`);
     const chatId = msg.chat.id;
     const namePart = getNameForReply(msg);
