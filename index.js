@@ -236,14 +236,14 @@ bot.onText(
     });
   }
 );
-
 // motivational reply to encourage ppl to carry on joining the LC party
 bot.on('message', async (msg) => {
   // console.log(msg)
   const messageId = msg.message_id;
   if (msg.photo && msg.caption) {
     const match = msg.caption.match(/#LC(20\d{2})(\d{2})(\d{2})/g);
-    if (!match) {
+    const matchTT = msg.caption.match(/#LCTT(20\d{2})(\d{2})(\d{2})/g); // #LCTT (time travel) for submission of past LCs. Note that this will accept any date
+    if (!match && !matchTT) {
       return;
     }
     const resp = match[0].substring(3, 11); // find the YYYYMMDD
@@ -251,16 +251,34 @@ bot.on('message', async (msg) => {
     const chatId = msg.chat.id;
     const namePart = getNameForReply(msg);
 
-    let reply = `Sorry ${namePart}, the date you submitted is not valid. Please use current date with format #LCYYYYMMDD. 😊`;
-
-    const submissionDate = dayjs(resp, 'YYYYMMDD');
-    console.log('submissionDate', submissionDate);
+    let reply = `Sorry ${namePart}, the date you submitted is not valid. Please use current date with format #LCYYYYMMDD. 😊\n\n Note that LC submission acceptance for a date starts only after 8am. If you are submitting before 8am, use yesterday's date. If you are using a time travel token, use the date of the problem with format #LCTTYYYYMMDD.`;
+    const submissionHour = dayjs().hour();
+    let leftBound = undefined;
+    let rightBound = undefined;
+    if (submissionHour < 8) {
+      // If the time of submission is before 8am, the submission must be for yesterday's date
+      leftBound = dayjs()
+        .hour(8)
+        .minute(0)
+        .second(0)
+        .millisecond(0)
+        .subtract(1, 'day');
+      rightBound = dayjs().hour(8).minute(0).second(0).millisecond(0);
+    } else {
+      // If the time of submission is after 8am, submission must be for today's date
+      leftBound = dayjs().hour(8).minute(0).second(0).millisecond(0);
+      rightBound = dayjs()
+        .hour(8)
+        .minute(0)
+        .second(0)
+        .millisecond(0)
+        .add(1, 'day');
+    }
+    const submissionDate = dayjs(resp, 'YYYYMMDD').hour(submissionHour);
 
     if (
-      !submissionDate.isBetween(
-        dayjs().subtract(2, 'day'),
-        dayjs().add(2, 'day')
-      )
+      match &&
+      !submissionDate.isBetween(leftBound, rightBound, 'hour', '[]')
     ) {
       bot.sendMessage(chatId, reply, {
         reply_to_message_id: messageId,
@@ -268,6 +286,7 @@ bot.on('message', async (msg) => {
       return;
     }
 
+    // if matchTT or match within correct time:
     const dateStr = submissionDate.format('DD/MM/YYYY');
     const response = await axios.get(`https://api.github.com/zen`);
 
