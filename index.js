@@ -250,7 +250,7 @@ bot.on('message', async (msg) => {
     if (match) {
       resp = match[0].substring(3, 11); // find the YYYYMMDD
     } else if (matchTT) {
-      resp = match[0].substring(5, 11); // find the YYYYMMDD
+      resp = matchTT[0].substring(5, 11); // find the YYYYMMDD
     }
     console.log(`Received YYYYMMDD: ${resp}`);
     const chatId = msg.chat.id;
