@@ -3,7 +3,9 @@ const axios = require('axios');
 const { Client } = require('pg');
 const dayjs = require('dayjs');
 let isBetween = require('dayjs/plugin/isBetween');
+let utc = require('dayjs/plugin/utc');
 dayjs.extend(isBetween);
+dayjs.extend(utc);
 const cron = require('node-cron');
 const client = new Client();
 
@@ -236,13 +238,44 @@ bot.onText(
     });
   }
 );
+
+function isValidLCDate(resp, testDate, testHour) {
+  let submissionHour = undefined;
+  if (testHour != null) {
+    submissionHour = testHour;
+  } else {
+    submissionHour = dayjs.utc().hour();
+  }
+
+  let leftBound = undefined;
+  let rightBound = undefined;
+
+  if (testDate != null) {
+    leftBound = dayjs
+      .utc(testDate, 'YYYYMMDD')
+      .hour(0)
+      .minute(0)
+      .second(0)
+      .millisecond(0);
+    rightBound = leftBound.add(1, 'day');
+  } else {
+    leftBound = dayjs.utc().hour(0).minute(0).second(0).millisecond(0);
+    rightBound = leftBound.add(1, 'day');
+  }
+
+  const submissionDate = dayjs.utc(resp, 'YYYYMMDD').hour(submissionHour);
+  return submissionDate.isBetween(leftBound, rightBound, 'millisecond', '[)');
+}
+
 // motivational reply to encourage ppl to carry on joining the LC party
 bot.on('message', async (msg) => {
   // console.log(msg)
   const messageId = msg.message_id;
   if (msg.photo && msg.caption) {
     const match = msg.caption.match(/#LC(20\d{2})(\d{2})(\d{2})/g);
-    const matchTT = msg.caption.match(/#LCTT(20\d{2})(\d{2})(\d{2})/g); // #LCTT (time travel) for submission of past LCs. Note that this will accept any date
+    const matchTT = msg.caption.match(/#LCTT(20\d{2})(\d{2})(\d{2})/g); // #LCTT (time travel) for submission
+    // of past LCs. Note that this will
+    // accept any date
     if (!match && !matchTT) {
       return;
     }
@@ -257,31 +290,8 @@ bot.on('message', async (msg) => {
     const namePart = getNameForReply(msg);
 
     let reply = `Sorry ${namePart}, the date you submitted is not valid. Please use current date with format #LCYYYYMMDD. 😊\n\n Note that LC submission acceptance for a date starts only after 8am. If you are submitting before 8am, use yesterday's date. If you are using a time travel token, use the date of the problem with format #LCTTYYYYMMDD.`;
-    const submissionHour = dayjs().hour();
-    let leftBound = undefined;
-    let rightBound = undefined;
-    if (submissionHour < 8) {
-      // If the time of submission is before 8am, the submission must be for yesterday's date
-      // prettier-ignore
-      leftBound = dayjs().hour(8).minute(0).second(0).millisecond(0).subtract(1, 'day');
-      // prettier-ignore
-      rightBound = dayjs().hour(8).minute(0).second(0).millisecond(0);
-    } else {
-      // If the time of submission is after 8am, submission must be for today's date
-      leftBound = dayjs().hour(8).minute(0).second(0).millisecond(0);
-      rightBound = dayjs()
-        .hour(8)
-        .minute(0)
-        .second(0)
-        .millisecond(0)
-        .add(1, 'day');
-    }
-    const submissionDate = dayjs(resp, 'YYYYMMDD').hour(8);
 
-    if (
-      match &&
-      !submissionDate.isBetween(leftBound, rightBound, 'hour', '[]')
-    ) {
+    if (match && !isValidLCDate(resp)) {
       bot.sendMessage(chatId, reply, {
         reply_to_message_id: messageId,
       });
