@@ -239,31 +239,25 @@ bot.onText(
   }
 );
 
-function isValidLCDate(resp, testDate, testHour) {
-  let submissionHour = undefined;
-  if (testHour != null) {
-    submissionHour = testHour;
-  } else {
-    submissionHour = dayjs.utc().hour();
-  }
-
-  let leftBound = undefined;
-  let rightBound = undefined;
-
-  if (testDate != null) {
-    leftBound = dayjs
-      .utc(testDate, 'YYYYMMDD')
-      .hour(0)
-      .minute(0)
-      .second(0)
-      .millisecond(0);
+function isValidLCDate(...args) {
+  let submissionHour;
+  let leftBound, rightBound;
+  const resp = args[0];
+  if (args.length > 1) {
+    leftBound = dayjs.utc(args[1], 'YYYYMMDD').hour(0).minute(0).second(0);
     rightBound = leftBound.add(1, 'day');
+    submissionHour = args[2];
   } else {
     leftBound = dayjs.utc().hour(0).minute(0).second(0).millisecond(0);
     rightBound = leftBound.add(1, 'day');
+    submissionHour = dayjs.utc().hour();
   }
 
   const submissionDate = dayjs.utc(resp, 'YYYYMMDD').hour(submissionHour);
+  //  console.log(`Submission hour: ${submissionHour}`);
+  //  console.log(`Submission date: ${submissionDate}`);
+  //  console.log(`Left bound: ${leftBound}`);
+  //  console.log(`Right bound: ${rightBound}`);
   return submissionDate.isBetween(leftBound, rightBound, 'millisecond', '[)');
 }
 
@@ -289,7 +283,7 @@ bot.on('message', async (msg) => {
     const chatId = msg.chat.id;
     const namePart = getNameForReply(msg);
 
-    let reply = `Sorry ${namePart}, the date you submitted is not valid. Please use current date with format #LCYYYYMMDD. 😊\n\n Note that LC submission acceptance for a date starts only after 8am. If you are submitting before 8am, use yesterday's date. If you are using a time travel token, use the date of the problem with format #LCTTYYYYMMDD.`;
+    let reply = `Sorry ${namePart}, the date you submitted is not valid. Please use current date with format #LCYYYYMMDD. 😊\n\nNote that LC submission acceptance for a date starts only after 8am. If you are submitting before 8am, use yesterday's date. If you are using a time travel token, use the date of the problem with format #LCTTYYYYMMDD.`;
 
     if (match && !isValidLCDate(resp)) {
       bot.sendMessage(chatId, reply, {
@@ -500,3 +494,4 @@ bot.onText(/!lc/i, async (msg) => {
 });
 
 console.log('Bot started');
+exports.isValidLCDate = isValidLCDate;

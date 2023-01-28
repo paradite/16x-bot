@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --verbose ./test",
     "start": "git pull && pm2 restart index"
   },
   "author": "",
