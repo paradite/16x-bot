@@ -1,4 +1,4 @@
-const isValidLCDate = require('../index').isValidLCDate;
+const isValidLCDate = require('../utils/isValidLCDate');
 
 let mockDate;
 let mockHour;
