@@ -5,8 +5,7 @@ dayjs.extend(isBetween);
 dayjs.extend(utc);
 
 function isValidLCDate(...args) {
-  let submissionHour;
-  let leftBound, rightBound;
+  let submissionHour, leftBound, rightBound;
   const resp = args[0];
   if (args.length > 1) {
     leftBound = dayjs.utc(args[1], 'YYYYMMDD').hour(0).minute(0).second(0);
