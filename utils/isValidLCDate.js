@@ -8,6 +8,7 @@ function isValidLCDate(...args) {
   let submissionHour, leftBound, rightBound;
   const resp = args[0];
   if (args.length > 1) {
+    // For tests
     leftBound = dayjs.utc(args[1], 'YYYYMMDD').hour(0).minute(0).second(0);
     rightBound = leftBound.add(1, 'day');
     submissionHour = args[2];
