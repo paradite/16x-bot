@@ -18,4 +18,4 @@ jobs:
           cache: 'yarn'
       - name: 'yarn install'
         run: yarn install
-      - run: yarn jest \.test\.js
+      - run: yarn jest "/test/"
