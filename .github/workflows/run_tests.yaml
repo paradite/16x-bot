@@ -1,4 +1,4 @@
-name: 'Backend API test case'
+name: 'Unit tests'
 on:
   push:
   pull_request:
