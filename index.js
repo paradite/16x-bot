@@ -3,7 +3,7 @@ const axios = require('axios');
 const { Client } = require('pg');
 const isValidLCDate = require('./utils/isValidLCDate');
 const cron = require('node-cron');
-const client = new Client();
+const client = new Client({ user: 'postgres', password: 'postgres' });
 
 client
   .connect()
@@ -267,7 +267,13 @@ bot.on('message', async (msg) => {
     }
 
     // if matchTT or match within correct time:
-    const dateStr = submissionDate.format('DD/MM/YYYY');
+    const dateStr =
+      resp.substring(6, 8) +
+      '/' +
+      resp.substring(4, 6) +
+      '/' +
+      resp.substring(0, 4);
+    console.log(dateStr);
     const response = await axios.get(`https://api.github.com/zen`);
 
     let statsStr = '';
