@@ -1,0 +1,21 @@
+name: 'Backend API test case'
+on:
+  push:
+  pull_request:
+    branches:
+      - develop
+      - main
+jobs:
+  tests:
+    name: 'Running test cases'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'yarn'
+      - name: 'yarn install'
+        run: yarn install
+      - run: yarn test
