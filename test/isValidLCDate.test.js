@@ -1,52 +1,52 @@
 const isValidLCDate = require('../utils/isValidLCDate');
 
-let mockDate;
-let mockHour;
+let mockServerDate;
+let mockServerHour;
 
 test('Valid LC Date', () => {
-  mockDate = '20210121';
-  mockHour = 0;
-  expect(isValidLCDate('20210121', mockDate, mockHour)).toBe(true);
+  mockServerDate = '20210121';
+  mockServerHour = 0;
+  expect(isValidLCDate('20210121', mockServerDate, mockServerHour)).toBe(true);
 });
 
 test('Valid LC Date', () => {
-  mockDate = '20210126';
-  mockHour = 3;
-  expect(isValidLCDate('20210126', mockDate, mockHour)).toBe(true);
+  mockServerDate = '20210126';
+  mockServerHour = 3;
+  expect(isValidLCDate('20210126', mockServerDate, mockServerHour)).toBe(true);
 });
 
 test('Valid LC Date', () => {
-  mockDate = '20210120';
-  mockHour = 10;
-  expect(isValidLCDate('20210120', mockDate, mockHour)).toBe(true);
+  mockServerDate = '20210120';
+  mockServerHour = 10;
+  expect(isValidLCDate('20210120', mockServerDate, mockServerHour)).toBe(true);
 });
 
 test('Invalid LC Date', () => {
-  mockDate = '20210123';
-  mockHour = 23;
-  expect(isValidLCDate('20210124', mockDate, mockHour)).toBe(false);
+  mockServerDate = '20210123';
+  mockServerHour = 23;
+  expect(isValidLCDate('20210124', mockServerDate, mockServerHour)).toBe(false);
 });
 
 test('Invalid LC Date', () => {
-  mockDate = '20210127';
+  mockServerDate = '20210127';
   mockhour = 0;
-  expect(isValidLCDate('20210126', mockDate, mockHour)).toBe(false);
+  expect(isValidLCDate('20210126', mockServerDate, mockServerHour)).toBe(false);
 });
 
 test('Invalid LC Date', () => {
-  mockDate = '20210124';
-  mockHour = 0;
-  expect(isValidLCDate('20210125', mockDate, mockHour)).toBe(false);
+  mockServerDate = '20210124';
+  mockServerHour = 0;
+  expect(isValidLCDate('20210125', mockServerDate, mockServerHour)).toBe(false);
 });
 
 test('Invalid LC Date', () => {
-  mockDate = '20210122';
-  mockHour = 0;
-  expect(isValidLCDate('20210120', mockDate, mockHour)).toBe(false);
+  mockServerDate = '20210122';
+  mockServerHour = 0;
+  expect(isValidLCDate('20210120', mockServerDate, mockServerHour)).toBe(false);
 });
 
 test('Invalid LC Date', () => {
-  mockDate = '20210124';
-  mockHour = 0;
-  expect(isValidLCDate('20210126', mockDate, mockHour)).toBe(false);
+  mockServerDate = '20210124';
+  mockServerHour = 0;
+  expect(isValidLCDate('20210126', mockServerDate, mockServerHour)).toBe(false);
 });
