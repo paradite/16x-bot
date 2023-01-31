@@ -241,9 +241,7 @@ bot.on('message', async (msg) => {
   const messageId = msg.message_id;
   if (msg.photo && msg.caption) {
     const match = msg.caption.match(/#LC(20\d{2})(\d{2})(\d{2})/g);
-    const matchTT = msg.caption.match(/#LCTT(20\d{2})(\d{2})(\d{2})/g); // #LCTT (time travel) for submission
-    // of past LCs. Note that this will
-    // accept any date
+    const matchTT = msg.caption.match(/#LCTT(20\d{2})(\d{2})(\d{2})/g); // #LCTT (time travel) for submission of past LCs. Note that this will accept any date
     if (!match && !matchTT) {
       return;
     }
@@ -474,4 +472,3 @@ bot.onText(/!lc/i, async (msg) => {
 });
 
 console.log('Bot started');
-exports.isValidLCDate = isValidLCDate;
