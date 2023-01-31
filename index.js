@@ -3,7 +3,7 @@ const axios = require('axios');
 const { Client } = require('pg');
 const isValidLCDate = require('./utils/isValidLCDate');
 const cron = require('node-cron');
-const client = new Client({ user: 'postgres', password: 'postgres' });
+const client = new Client();
 
 client
   .connect()
