@@ -236,7 +236,7 @@ bot.onText(
     );
 
     if (dinBotResponseText) {
-      reply = `Non-English message detected. Auto-translation by Din bot: ${dinBotResponseText}`;
+      reply = `Non-English message detected. Auto-translation:\n${dinBotResponseText}`;
     }
 
     console.log(`Reply: ${reply}`);
