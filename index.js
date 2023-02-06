@@ -216,7 +216,7 @@ bot.onText(/!bot ((?:.|\n|\r)+)/, async (msg, match) => {
 // bot.onText(/\/define (.+)/, (msg, match) => {
 bot.onText(
   /([\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff66-\uff9f])/,
-  (msg, match) => {
+  async (msg, match) => {
     // 'msg' is the received Message from Telegram
     // 'match' is the result of executing the regexp above on the text content
     // of the message
@@ -227,12 +227,24 @@ bot.onText(
 
     console.log(`Received: ${resp}`);
 
-    const reply = `Hi, ${namePart}. This is a gentle reminder to use English in this group so that everyone can understand. 😊`;
+    let reply = `Hi, ${namePart}. This is a gentle reminder to use English in this group so that everyone can understand. 😊`;
+
+    // redirect to Din bot
+    const dinBotResponseText = await getDinBotResponse(
+      `translate ${resp}`,
+      namePart
+    );
+
+    if (dinBotResponseText) {
+      reply = `Non-English message detected. Auto-translation by Din bot: ${dinBotResponseText}`;
+    }
 
     console.log(`Reply: ${reply}`);
     // send back the matched "whatever" to the chat
     bot.sendMessage(chatId, reply, {
       reply_to_message_id: messageId,
+      disable_web_page_preview: true,
+      parse_mode: 'Markdown',
     });
   }
 );
