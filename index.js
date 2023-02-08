@@ -94,7 +94,7 @@ async function getLanguageResponse(query) {
     );
     const data = response.data;
     return data;
-    
+  }
     catch (error) {
     console.log('language detection model error');
     console.log(error);
