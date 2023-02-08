@@ -75,6 +75,34 @@ function checkAdmin(msg) {
   return true;
 }
 
+async function getLanguageResponse(query) {
+  console.log('Sending to Din Language Detection:');
+  console.log(query);
+  const languageDetectionUrl = 
+    'https://language-detection-zd63nwo7na-as.a.run.app';
+  const languageDetectionToken = process.env.DIN_TOKEN;
+  try {
+    const response = await axios.post(
+      languageDetectionUrl,
+      {
+        message: query,
+        key: languageDetectionToken,
+      },
+      {
+        headers: {},
+      }
+    );
+    const data = response.data;
+    return data;
+    
+    catch (error) {
+    console.log('language detection model error');
+    console.log(error);
+    return undefined;
+  }
+}
+  
+
 async function getDinBotResponse(query, namePart) {
   console.log('Sending to Din bot:');
   console.log(query);
@@ -248,6 +276,7 @@ bot.onText(
     });
   }
 );
+
 // motivational reply to encourage ppl to carry on joining the LC party
 bot.on('message', async (msg) => {
   // console.log(msg)
