@@ -224,14 +224,14 @@ bot.onText(
     const chatId = msg.chat.id;
     const namePart = getNameForReply(msg);
     const resp = match[1]; // the captured "whatever"
-
-    console.log(`Received: ${resp}`);
+    const messageContent = msg.text || msg.caption;
+    console.log(`Received: ${resp} Content: ${messageContent}`);
 
     let reply = `Hi, ${namePart}. This is a gentle reminder to use English in this group so that everyone can understand. 😊`;
 
     // redirect to Din bot
     const dinBotResponseText = await getDinBotResponse(
-      `translate ${resp}`,
+      `translate ${messageContent}`,
       namePart
     );
 
@@ -412,7 +412,7 @@ const chatIdCronStatusMap = {};
 
 // Command to start cron job
 // Definitely need to change this to an admin-only command
-bot.onText(/\/startDailyLCSchedule/, async (msg) => {
+bot.onText(/\/startLC/i, async (msg) => {
   if (!checkAdmin(msg)) {
     return;
   }
@@ -449,7 +449,7 @@ bot.onText(/\/startDailyLCSchedule/, async (msg) => {
 });
 
 // Command to end cron job
-bot.onText(/\/stopDailyLCSchedule/, async (msg) => {
+bot.onText(/\/stopLC/i, async (msg) => {
   if (!checkAdmin(msg)) {
     return;
   }
@@ -465,7 +465,7 @@ bot.onText(/\/stopDailyLCSchedule/, async (msg) => {
 });
 
 // Check cron job schedule
-bot.onText(/\/checkDailyLCSchedule/, async (msg) => {
+bot.onText(/\/checkLC/i, async (msg) => {
   if (!checkAdmin(msg)) {
     return;
   }
