@@ -78,7 +78,7 @@ function checkAdmin(msg) {
 async function getLanguageResponse(query) {
   console.log('Sending to Din Language Detection:');
   console.log(query);
-  const languageDetectionUrl = 
+  const languageDetectionUrl =
     'https://language-detection-zd63nwo7na-as.a.run.app';
   const languageDetectionToken = process.env.DIN_TOKEN;
   try {
@@ -94,14 +94,12 @@ async function getLanguageResponse(query) {
     );
     const data = response.data;
     return data;
-  }
-    catch (error) {
+  } catch (error) {
     console.log('language detection model error');
     console.log(error);
     return undefined;
   }
 }
-  
 
 async function getDinBotResponse(query, namePart) {
   console.log('Sending to Din bot:');
