@@ -257,7 +257,7 @@ bot.onText(
 
     // redirect to Din bot
     const dinBotResponseText = await getDinBotResponse(
-      `translate ${messageContent}`,
+      `translate to English: ${messageContent}`,
       namePart
     );
 
