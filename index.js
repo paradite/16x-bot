@@ -238,9 +238,11 @@ bot.onText(/!bot ((?:.|\n|\r)+)/, async (msg, match) => {
   });
 });
 
+const RECURSIVE_MARKER = 'Auto-translation';
+
 async function handleNonEnglish(namePart, messageContent, messageId, chatId) {
   console.log(`Handle Non-English Content: ${messageContent}`);
-  let reply = `Non-English message detected. Auto-translation failed.`;
+  let reply = `Non-English message detected. ${RECURSIVE_MARKER} failed.`;
 
   // redirect to Din bot
   const dinBotResponseText = await getDinBotResponse(
@@ -249,7 +251,7 @@ async function handleNonEnglish(namePart, messageContent, messageId, chatId) {
   );
 
   if (dinBotResponseText) {
-    reply = `Non-English message detected. Auto-translation:\n${dinBotResponseText}`;
+    reply = `Non-English message detected. ${RECURSIVE_MARKER}:\n${dinBotResponseText}`;
   }
 
   console.log(`Reply: ${reply}`);
@@ -263,22 +265,32 @@ async function handleNonEnglish(namePart, messageContent, messageId, chatId) {
 
 // language detection and auto translation
 bot.on('message', async (msg) => {
-  console.log('detect:', msg);
   const messageId = msg.message_id;
   const messageContent = msg.text || msg.caption;
   if (!messageContent) {
     return;
   }
+  if (messageContent.includes(RECURSIVE_MARKER)) {
+    console.log('recursive detected:', messageContent);
+    return;
+  }
+  console.log('detecting:', messageContent);
   const detectResponse = await getLanguageResponse(messageContent);
   if (!detectResponse) {
     return;
   }
   console.log('detectResponse:', detectResponse);
-  // if (detectResponse.predicted && detectResponse.predicted !== 'ENGLISH') {
-  //   const chatId = msg.chat.id;
-  //   const namePart = getNameForReply(msg);
-  //   handleNonEnglish(namePart, messageContent, messageId, chatId);
-  // }
+  if (
+    detectResponse.predicted &&
+    detectResponse.predicted !== 'ENGLISH' &&
+    detectResponse.confidence > 0.8
+  ) {
+    console.log('exec detectResponse.confidence:', detectResponse.confidence);
+    console.log('exec detectResponse.predicted:', detectResponse.predicted);
+    const chatId = msg.chat.id;
+    const namePart = getNameForReply(msg);
+    handleNonEnglish(namePart, messageContent, messageId, chatId);
+  }
 });
 
 // Chinese detection
