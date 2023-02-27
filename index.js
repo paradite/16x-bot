@@ -238,42 +238,84 @@ bot.onText(/!bot ((?:.|\n|\r)+)/, async (msg, match) => {
   });
 });
 
+async function handleNonEnglish(namePart, messageContent, messageId, chatId) {
+  console.log(`Handle Non-English Content: ${messageContent}`);
+  let reply = `Non-English message detected. Auto-translation failed.`;
+
+  // redirect to Din bot
+  const dinBotResponseText = await getDinBotResponse(
+    `translate to English: ${messageContent}`,
+    namePart
+  );
+
+  if (dinBotResponseText) {
+    reply = `Non-English message detected. Auto-translation:\n${dinBotResponseText}`;
+  }
+
+  console.log(`Reply: ${reply}`);
+
+  bot.sendMessage(chatId, reply, {
+    reply_to_message_id: messageId,
+    disable_web_page_preview: true,
+    parse_mode: 'Markdown',
+  });
+}
+
 // Chinese detection
 // bot.onText(/\/define (.+)/, (msg, match) => {
-bot.onText(
-  /([\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff66-\uff9f])/,
-  async (msg, match) => {
-    // 'msg' is the received Message from Telegram
-    // 'match' is the result of executing the regexp above on the text content
-    // of the message
-    const messageId = msg.message_id;
+// bot.onText(
+//   /([\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff66-\uff9f])/,
+//   async (msg, match) => {
+//     // 'msg' is the received Message from Telegram
+//     // 'match' is the result of executing the regexp above on the text content
+//     // of the message
+//     const messageId = msg.message_id;
+//     const chatId = msg.chat.id;
+//     const namePart = getNameForReply(msg);
+//     const resp = match[1]; // the captured "whatever"
+//     const messageContent = msg.text || msg.caption;
+//     console.log(`Received: ${resp} Content: ${messageContent}`);
+
+//     let reply = `Hi, ${namePart}. This is a gentle reminder to use English in this group so that everyone can understand. 😊`;
+
+//     // redirect to Din bot
+//     const dinBotResponseText = await getDinBotResponse(
+//       `translate to English: ${messageContent}`,
+//       namePart
+//     );
+
+//     if (dinBotResponseText) {
+//       reply = `Non-English message detected. Auto-translation:\n${dinBotResponseText}`;
+//     }
+
+//     console.log(`Reply: ${reply}`);
+//     // send back the matched "whatever" to the chat
+//     bot.sendMessage(chatId, reply, {
+//       reply_to_message_id: messageId,
+//       disable_web_page_preview: true,
+//       parse_mode: 'Markdown',
+//     });
+//   }
+// );
+
+// language detection and auto translation
+bot.on('message', async (msg) => {
+  // console.log(msg)
+  const messageId = msg.message_id;
+  const messageContent = msg.text || msg.caption;
+  if (!messageContent) {
+    return;
+  }
+  const detectResponse = await getLanguageResponse(messageContent);
+  if (!detectResponse) {
+    return;
+  }
+  if (detectResponse.predicted && detectResponse.predicted !== 'ENGLISH') {
     const chatId = msg.chat.id;
     const namePart = getNameForReply(msg);
-    const resp = match[1]; // the captured "whatever"
-    const messageContent = msg.text || msg.caption;
-    console.log(`Received: ${resp} Content: ${messageContent}`);
-
-    let reply = `Hi, ${namePart}. This is a gentle reminder to use English in this group so that everyone can understand. 😊`;
-
-    // redirect to Din bot
-    const dinBotResponseText = await getDinBotResponse(
-      `translate to English: ${messageContent}`,
-      namePart
-    );
-
-    if (dinBotResponseText) {
-      reply = `Non-English message detected. Auto-translation:\n${dinBotResponseText}`;
-    }
-
-    console.log(`Reply: ${reply}`);
-    // send back the matched "whatever" to the chat
-    bot.sendMessage(chatId, reply, {
-      reply_to_message_id: messageId,
-      disable_web_page_preview: true,
-      parse_mode: 'Markdown',
-    });
+    handleNonEnglish(namePart, messageContent, messageId, chatId);
   }
-);
+});
 
 // motivational reply to encourage ppl to carry on joining the LC party
 bot.on('message', async (msg) => {
