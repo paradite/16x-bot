@@ -261,6 +261,26 @@ async function handleNonEnglish(namePart, messageContent, messageId, chatId) {
   });
 }
 
+// language detection and auto translation
+bot.on('message', async (msg) => {
+  console.log('detect:', msg);
+  const messageId = msg.message_id;
+  const messageContent = msg.text || msg.caption;
+  if (!messageContent) {
+    return;
+  }
+  const detectResponse = await getLanguageResponse(messageContent);
+  if (!detectResponse) {
+    return;
+  }
+  console.log('detectResponse:', detectResponse);
+  // if (detectResponse.predicted && detectResponse.predicted !== 'ENGLISH') {
+  //   const chatId = msg.chat.id;
+  //   const namePart = getNameForReply(msg);
+  //   handleNonEnglish(namePart, messageContent, messageId, chatId);
+  // }
+});
+
 // Chinese detection
 // bot.onText(/\/define (.+)/, (msg, match) => {
 // bot.onText(
@@ -297,25 +317,6 @@ async function handleNonEnglish(namePart, messageContent, messageId, chatId) {
 //     });
 //   }
 // );
-
-// language detection and auto translation
-bot.on('message', async (msg) => {
-  // console.log(msg)
-  const messageId = msg.message_id;
-  const messageContent = msg.text || msg.caption;
-  if (!messageContent) {
-    return;
-  }
-  const detectResponse = await getLanguageResponse(messageContent);
-  if (!detectResponse) {
-    return;
-  }
-  if (detectResponse.predicted && detectResponse.predicted !== 'ENGLISH') {
-    const chatId = msg.chat.id;
-    const namePart = getNameForReply(msg);
-    handleNonEnglish(namePart, messageContent, messageId, chatId);
-  }
-});
 
 // motivational reply to encourage ppl to carry on joining the LC party
 bot.on('message', async (msg) => {
