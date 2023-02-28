@@ -75,8 +75,8 @@ function checkAdmin(msg) {
   return true;
 }
 
-async function getLanguageResponse(query) {
-  console.log('Sending to Din Language Detection:');
+async function getLanguageResponse(query, chatId) {
+  console.log(`Sending to Din Language Detection from chatId ${chatId}:`);
   console.log(query);
   const languageDetectionUrl =
     'https://language-detection-zd63nwo7na-as.a.run.app';
@@ -87,6 +87,7 @@ async function getLanguageResponse(query) {
       {
         message: query,
         key: languageDetectionToken,
+        chatId,
       },
       {
         headers: {},
@@ -101,8 +102,8 @@ async function getLanguageResponse(query) {
   }
 }
 
-async function getDinBotResponse(query, namePart) {
-  console.log('Sending to Din bot:');
+async function getDinBotResponse(query, namePart, chatId) {
+  console.log(`Sending to Din bot from chatId ${chatId}:`);
   console.log(query);
   const dinBotUrl =
     'https://asia-southeast1-free-jobs-253208.cloudfunctions.net/din';
@@ -116,6 +117,7 @@ async function getDinBotResponse(query, namePart) {
         message: query,
         key: dinToken,
         user: namePart,
+        chatId,
       },
       {
         headers: {},
@@ -159,6 +161,7 @@ bot.onText(/(?:!summarize|!summarise)(?: *)(.*)/, async (msg, match) => {
 
   const messageId = msg.message_id;
   const chatId = msg.chat.id;
+  const namePart = getNameForReply(msg);
 
   const replyToMessage = msg.reply_to_message;
   if (!replyToMessage) {
@@ -185,7 +188,9 @@ bot.onText(/(?:!summarize|!summarise)(?: *)(.*)/, async (msg, match) => {
   let reply = `Failed to summarize.`;
   // redirect to Din bot
   const dinBotResponseText = await getDinBotResponse(
-    `summarise ${match[1] ? match[1] : 'this'}\r\n${resp}`
+    `summarise ${match[1] ? match[1] : 'this'}\r\n${resp}`,
+    namePart,
+    chatId
   );
   if (dinBotResponseText) {
     reply = `${dinBotResponseText}`;
@@ -223,7 +228,7 @@ bot.onText(/!bot ((?:.|\n|\r)+)/, async (msg, match) => {
     }
   } else {
     // redirect to Din bot
-    const dinBotResponseText = await getDinBotResponse(resp, namePart);
+    const dinBotResponseText = await getDinBotResponse(resp, namePart, chatId);
     if (dinBotResponseText) {
       reply = `${dinBotResponseText}`;
     }
@@ -247,7 +252,8 @@ async function handleNonEnglish(namePart, messageContent, messageId, chatId) {
   // redirect to Din bot
   const dinBotResponseText = await getDinBotResponse(
     `translate to English: ${messageContent}`,
-    namePart
+    namePart,
+    chatId
   );
 
   if (dinBotResponseText) {
@@ -267,6 +273,7 @@ async function handleNonEnglish(namePart, messageContent, messageId, chatId) {
 bot.on('message', async (msg) => {
   const messageId = msg.message_id;
   const messageContent = msg.text || msg.caption;
+  const chatId = msg.chat.id;
   if (!messageContent) {
     return;
   }
@@ -275,7 +282,7 @@ bot.on('message', async (msg) => {
     return;
   }
   console.log('detecting:', messageContent);
-  const detectResponse = await getLanguageResponse(messageContent);
+  const detectResponse = await getLanguageResponse(messageContent, chatId);
   if (!detectResponse) {
     return;
   }
@@ -287,48 +294,10 @@ bot.on('message', async (msg) => {
   ) {
     console.log('exec detectResponse.confidence:', detectResponse.confidence);
     console.log('exec detectResponse.predicted:', detectResponse.predicted);
-    const chatId = msg.chat.id;
     const namePart = getNameForReply(msg);
     handleNonEnglish(namePart, messageContent, messageId, chatId);
   }
 });
-
-// Chinese detection
-// bot.onText(/\/define (.+)/, (msg, match) => {
-// bot.onText(
-//   /([\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff66-\uff9f])/,
-//   async (msg, match) => {
-//     // 'msg' is the received Message from Telegram
-//     // 'match' is the result of executing the regexp above on the text content
-//     // of the message
-//     const messageId = msg.message_id;
-//     const chatId = msg.chat.id;
-//     const namePart = getNameForReply(msg);
-//     const resp = match[1]; // the captured "whatever"
-//     const messageContent = msg.text || msg.caption;
-//     console.log(`Received: ${resp} Content: ${messageContent}`);
-
-//     let reply = `Hi, ${namePart}. This is a gentle reminder to use English in this group so that everyone can understand. 😊`;
-
-//     // redirect to Din bot
-//     const dinBotResponseText = await getDinBotResponse(
-//       `translate to English: ${messageContent}`,
-//       namePart
-//     );
-
-//     if (dinBotResponseText) {
-//       reply = `Non-English message detected. Auto-translation:\n${dinBotResponseText}`;
-//     }
-
-//     console.log(`Reply: ${reply}`);
-//     // send back the matched "whatever" to the chat
-//     bot.sendMessage(chatId, reply, {
-//       reply_to_message_id: messageId,
-//       disable_web_page_preview: true,
-//       parse_mode: 'Markdown',
-//     });
-//   }
-// );
 
 // motivational reply to encourage ppl to carry on joining the LC party
 bot.on('message', async (msg) => {

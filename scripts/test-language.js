@@ -27,7 +27,7 @@ async function getLanguageResponse(query) {
 }
 
 async function testLanguage() {
-  const response = await getLanguageResponse('Put a tank inside a car.');
+  const response = await getLanguageResponse('sibay shiok');
   console.log('Response from Din Language Detection:');
   console.log(response);
 }
