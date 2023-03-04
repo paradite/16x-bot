@@ -244,6 +244,7 @@ bot.onText(/!bot ((?:.|\n|\r)+)/, async (msg, match) => {
 });
 
 const RECURSIVE_MARKER = 'Auto-translation';
+const IGNORE_WORDS = ['haha', 'ha ha'];
 
 async function handleNonEnglish(namePart, messageContent, messageId, chatId) {
   console.log(`Handle Non-English Content: ${messageContent}`);
@@ -281,6 +282,15 @@ bot.on('message', async (msg) => {
     console.log('recursive detected:', messageContent);
     return;
   }
+
+  for (let i = 0; i < IGNORE_WORDS.length; i++) {
+    const word = IGNORE_WORDS[i];
+    if (messageContent.toLowerCase().includes(word)) {
+      console.log('ignore word detected:', messageContent);
+      return;
+    }
+  }
+
   console.log('detecting:', messageContent);
   const detectResponse = await getLanguageResponse(messageContent, chatId);
   if (!detectResponse) {
