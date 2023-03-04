@@ -17,6 +17,10 @@ client
 let definitionMap = {};
 const termsUrl = 'https://paradite.github.io/16x-bot/terms.json';
 
+const RECURSIVE_MARKER = 'Auto-translation';
+const IGNORE_WORDS = ['haha', 'ha ha', 'lmao'];
+const LANGUAGE_CONFIDENCE_THRESHOLD = 0.85;
+
 axios
   .get(termsUrl)
   .then((response) => {
@@ -243,9 +247,6 @@ bot.onText(/!bot ((?:.|\n|\r)+)/, async (msg, match) => {
   });
 });
 
-const RECURSIVE_MARKER = 'Auto-translation';
-const IGNORE_WORDS = ['haha', 'ha ha'];
-
 async function handleNonEnglish(namePart, messageContent, messageId, chatId) {
   console.log(`Handle Non-English Content: ${messageContent}`);
   let reply = `Non-English message detected. ${RECURSIVE_MARKER} failed.`;
@@ -300,7 +301,7 @@ bot.on('message', async (msg) => {
   if (
     detectResponse.predicted &&
     detectResponse.predicted !== 'ENGLISH' &&
-    detectResponse.confidence > 0.8
+    detectResponse.confidence > LANGUAGE_CONFIDENCE_THRESHOLD
   ) {
     console.log('exec detectResponse.confidence:', detectResponse.confidence);
     console.log('exec detectResponse.predicted:', detectResponse.predicted);
