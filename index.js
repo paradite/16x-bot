@@ -18,7 +18,7 @@ let definitionMap = {};
 const termsUrl = 'https://paradite.github.io/16x-bot/terms.json';
 
 const RECURSIVE_MARKER = 'Auto-translation';
-const IGNORE_WORDS = ['haha', 'ha ha', 'lmao'];
+const IGNORE_WORDS = ['haha', 'ha ha', 'lmao', '@'];
 const LANGUAGE_CONFIDENCE_THRESHOLD = 0.85;
 
 axios
@@ -279,6 +279,12 @@ bot.on('message', async (msg) => {
   if (!messageContent) {
     return;
   }
+
+  if (messageContent.length <= 3) {
+    console.log('ignore short message:', messageContent);
+    return;
+  }
+
   if (messageContent.includes(RECURSIVE_MARKER)) {
     console.log('recursive detected:', messageContent);
     return;
