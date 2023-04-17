@@ -79,32 +79,32 @@ function checkAdmin(msg) {
   return true;
 }
 
-async function getLanguageResponse(query, chatId) {
-  console.log(`Sending to Din Language Detection from chatId ${chatId}:`);
-  console.log(query);
-  const languageDetectionUrl =
-    'https://language-detection-zd63nwo7na-as.a.run.app';
-  const languageDetectionToken = process.env.DIN_TOKEN;
-  try {
-    const response = await axios.post(
-      languageDetectionUrl,
-      {
-        message: query,
-        key: languageDetectionToken,
-        chatId,
-      },
-      {
-        headers: {},
-      }
-    );
-    const data = response.data;
-    return data;
-  } catch (error) {
-    console.log('language detection model error');
-    console.log(error);
-    return undefined;
-  }
-}
+// async function getLanguageResponse(query, chatId) {
+//   console.log(`Sending to Din Language Detection from chatId ${chatId}:`);
+//   console.log(query);
+//   const languageDetectionUrl =
+//     'https://language-detection-zd63nwo7na-as.a.run.app';
+//   const languageDetectionToken = process.env.DIN_TOKEN;
+//   try {
+//     const response = await axios.post(
+//       languageDetectionUrl,
+//       {
+//         message: query,
+//         key: languageDetectionToken,
+//         chatId,
+//       },
+//       {
+//         headers: {},
+//       }
+//     );
+//     const data = response.data;
+//     return data;
+//   } catch (error) {
+//     console.log('language detection model error');
+//     console.log(error);
+//     return undefined;
+//   }
+// }
 
 async function getDinBotResponse(query, namePart, chatId) {
   console.log(`Sending to Din bot from chatId ${chatId}:`);
@@ -249,7 +249,8 @@ bot.onText(/!bot ((?:.|\n|\r)+)/, async (msg, match) => {
 
 async function handleNonEnglish(namePart, messageContent, messageId, chatId) {
   console.log(`Handle Non-English Content: ${messageContent}`);
-  let reply = `Non-English message detected. ${RECURSIVE_MARKER} failed.`;
+  let reply = `${RECURSIVE_MARKER} failed. \nHi, ${namePart}. This is an automated reminder to use English in this group so that everyone can understand. 😊`;
+  // let reply = `Non-English message detected. ${RECURSIVE_MARKER} failed.`;
 
   // redirect to Din bot
   const dinBotResponseText = await getDinBotResponse(
@@ -272,49 +273,67 @@ async function handleNonEnglish(namePart, messageContent, messageId, chatId) {
 }
 
 // language detection and auto translation
-bot.on('message', async (msg) => {
-  const messageId = msg.message_id;
-  const messageContent = msg.text || msg.caption;
-  const chatId = msg.chat.id;
-  if (!messageContent) {
-    return;
-  }
+// bot.on('message', async (msg) => {
+//   const messageId = msg.message_id;
+//   const messageContent = msg.text || msg.caption;
+//   const chatId = msg.chat.id;
+//   if (!messageContent) {
+//     return;
+//   }
 
-  if (messageContent.length <= 3) {
-    console.log('ignore short message:', messageContent);
-    return;
-  }
+//   if (messageContent.length <= 3) {
+//     console.log('ignore short message:', messageContent);
+//     return;
+//   }
 
-  if (messageContent.includes(RECURSIVE_MARKER)) {
-    console.log('recursive detected:', messageContent);
-    return;
-  }
+//   if (messageContent.includes(RECURSIVE_MARKER)) {
+//     console.log('recursive detected:', messageContent);
+//     return;
+//   }
 
-  for (let i = 0; i < IGNORE_WORDS.length; i++) {
-    const word = IGNORE_WORDS[i];
-    if (messageContent.toLowerCase().includes(word)) {
-      console.log('ignore word detected:', messageContent);
-      return;
-    }
-  }
+//   for (let i = 0; i < IGNORE_WORDS.length; i++) {
+//     const word = IGNORE_WORDS[i];
+//     if (messageContent.toLowerCase().includes(word)) {
+//       console.log('ignore word detected:', messageContent);
+//       return;
+//     }
+//   }
 
-  console.log('detecting:', messageContent);
-  const detectResponse = await getLanguageResponse(messageContent, chatId);
-  if (!detectResponse) {
-    return;
-  }
-  console.log('detectResponse:', detectResponse);
-  if (
-    detectResponse.predicted &&
-    detectResponse.predicted !== 'ENGLISH' &&
-    detectResponse.confidence > LANGUAGE_CONFIDENCE_THRESHOLD
-  ) {
-    console.log('exec detectResponse.confidence:', detectResponse.confidence);
-    console.log('exec detectResponse.predicted:', detectResponse.predicted);
+//   console.log('detecting:', messageContent);
+//   const detectResponse = await getLanguageResponse(messageContent, chatId);
+//   if (!detectResponse) {
+//     return;
+//   }
+//   console.log('detectResponse:', detectResponse);
+//   if (
+//     detectResponse.predicted &&
+//     detectResponse.predicted !== 'ENGLISH' &&
+//     detectResponse.confidence > LANGUAGE_CONFIDENCE_THRESHOLD
+//   ) {
+//     console.log('exec detectResponse.confidence:', detectResponse.confidence);
+//     console.log('exec detectResponse.predicted:', detectResponse.predicted);
+//     const namePart = getNameForReply(msg);
+//     handleNonEnglish(namePart, messageContent, messageId, chatId);
+//   }
+// });
+
+// Chinese detection and translation
+bot.onText(
+  /([\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff66-\uff9f])/,
+  async (msg, match) => {
+    // 'msg' is the received Message from Telegram
+    // 'match' is the result of executing the regexp above on the text content
+    // of the message
+    const messageId = msg.message_id;
+    const chatId = msg.chat.id;
     const namePart = getNameForReply(msg);
-    handleNonEnglish(namePart, messageContent, messageId, chatId);
+    const resp = match[1]; // the captured "whatever"
+
+    console.log(`Received: ${resp}`);
+
+    handleNonEnglish(namePart, resp, messageId, chatId);
   }
-});
+);
 
 // motivational reply to encourage ppl to carry on joining the LC party
 bot.on('message', async (msg) => {
