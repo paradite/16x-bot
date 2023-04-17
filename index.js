@@ -325,13 +325,15 @@ bot.onText(
     // 'match' is the result of executing the regexp above on the text content
     // of the message
     const messageId = msg.message_id;
+    const messageContent = msg.text || msg.caption;
     const chatId = msg.chat.id;
     const namePart = getNameForReply(msg);
     const resp = match[1]; // the captured "whatever"
 
-    console.log(`Received: ${resp}`);
+    console.log(`Chinese matched: ${resp}`);
+    console.log(`Message content: ${messageContent}`);
 
-    handleNonEnglish(namePart, resp, messageId, chatId);
+    handleNonEnglish(namePart, messageContent, messageId, chatId);
   }
 );
 
