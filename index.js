@@ -18,7 +18,7 @@ let definitionMap = {};
 const termsUrl = 'https://paradite.github.io/16x-bot/terms.json';
 
 let trollQuotes = [];
-const trollConfuciusQuoteUrl = "https://paradite.github.io/16x-bot/troll_confucius.json";
+const trollConfuciusQuoteUrl = "https://raw.githubusercontent.com/techbump/telegram-bot/main/docs/troll_confucius.json";
 
 const RECURSIVE_MARKER = 'Auto-translation';
 const IGNORE_WORDS = ['haha', 'ha ha', 'lmao', '@'];
