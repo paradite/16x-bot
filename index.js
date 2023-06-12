@@ -360,9 +360,10 @@ bot.on('message', async (msg) => {
   if (msg.photo && msg.caption) {
     const match = msg.caption.match(/#LC(20\d{2})(\d{2})(\d{2})/g);
     const matchTT = msg.caption.match(/#LCTT(20\d{2})(\d{2})(\d{2})/g); // #LCTT (time travel) for submission of past LCs. Note that this will accept any date
-    const matchTroll = msg.caption.match(/#LC(20\d{2})(\d{2})(\d{2})_trollme/g);
 
-    let troll = false;
+    const useTrollQuote = msg.caption.match(/#LC(20\d{2})(\d{2})(\d{2})_trollme/g)
+        && match
+        && (trollQuotes.length > 0);
 
     if (!match && !matchTT) {
       return;
@@ -370,7 +371,6 @@ bot.on('message', async (msg) => {
     let resp;
     if (match) {
       resp = match[0].substring(3, 11); // find the YYYYMMDD
-      troll = matchTroll
     } else if (matchTT) {
       resp = matchTT[0].substring(5, 13); // find the YYYYMMDD
     }
@@ -414,9 +414,6 @@ bot.on('message', async (msg) => {
     const dateStr = submissionDate.format('DD/MM/YYYY');
     const response = await axios.get(`https://api.github.com/zen`);
 
-    const trollQuoteChoice = Math.floor((Math.random() * 73 * (trollQuotes.length+1)) % trollQuotes.length); // pick random troll quote
-    let quote = trollQuotes[trollQuoteChoice];
-
     let statsStr = '';
     try {
       const res = await client.query(
@@ -434,9 +431,8 @@ bot.on('message', async (msg) => {
       console.log('dateStr', dateStr);
       console.log('statsStr', statsStr);
 
-      if (!troll || trollQuotes.length === 0) {
-          quote = response.data;
-      }
+      const trollQuoteChoice = Math.floor(Math.random() * array.length);
+      const quote = useTrollQuote ? trollQuotes[trollQuoteChoice] : response.data
 
       reply = `Good job doing ${dateStr} LC question! 🚀 ${namePart}${statsStr}\r\n${quote}`;
       bot.sendMessage(chatId, reply, {
