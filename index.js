@@ -431,7 +431,7 @@ bot.on('message', async (msg) => {
       console.log('dateStr', dateStr);
       console.log('statsStr', statsStr);
 
-      const trollQuoteChoice = Math.floor(Math.random() * array.length);
+      const trollQuoteChoice = Math.floor(Math.random() * trollQuotes.length);
       const quote = useTrollQuote ? trollQuotes[trollQuoteChoice] : response.data
 
       reply = `Good job doing ${dateStr} LC question! 🚀 ${namePart}${statsStr}\r\n${quote}`;
