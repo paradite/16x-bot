@@ -17,6 +17,9 @@ client
 let definitionMap = {};
 const termsUrl = 'https://paradite.github.io/16x-bot/terms.json';
 
+let trollQuotes = [];
+const trollConfuciusQuoteUrl = "https://paradite.github.io/16x-bot/troll_confucius.json";
+
 const RECURSIVE_MARKER = 'Auto-translation';
 const IGNORE_WORDS = ['haha', 'ha ha', 'lmao', '@'];
 const LANGUAGE_CONFIDENCE_THRESHOLD = 0.85;
@@ -34,6 +37,19 @@ axios
     console.error('init dictionary fail');
     console.error(error);
   });
+
+
+axios
+  .get(trollConfuciusQuoteUrl)
+  .then(response) => {
+    console.log('got remote array of size', response.data.length);
+    trollQuotes = response.data;
+  })
+  .catch((error) => {
+    console.error('init troll fail');
+    console.error(error);
+  });
+
 
 // replace the value below with the Telegram token you receive from @BotFather
 const token = process.env.TELEGRAM_TOKEN;
@@ -344,12 +360,17 @@ bot.on('message', async (msg) => {
   if (msg.photo && msg.caption) {
     const match = msg.caption.match(/#LC(20\d{2})(\d{2})(\d{2})/g);
     const matchTT = msg.caption.match(/#LCTT(20\d{2})(\d{2})(\d{2})/g); // #LCTT (time travel) for submission of past LCs. Note that this will accept any date
+    const matchTroll = msg.caption.match(/#LC(20\d{2})(\d{2})(\d{2})_trollme/g);
+
+    let troll = false;
+
     if (!match && !matchTT) {
       return;
     }
     let resp;
     if (match) {
       resp = match[0].substring(3, 11); // find the YYYYMMDD
+      troll = matchTroll
     } else if (matchTT) {
       resp = matchTT[0].substring(5, 13); // find the YYYYMMDD
     }
@@ -393,6 +414,9 @@ bot.on('message', async (msg) => {
     const dateStr = submissionDate.format('DD/MM/YYYY');
     const response = await axios.get(`https://api.github.com/zen`);
 
+    const trollQuoteChoice = Math.floor((Math.random() * 73 * (trollQuotes.length+1)) % trollQuotes.length); // pick random troll quote
+    let quote = trollQuotes[trollQuoteChoice];
+
     let statsStr = '';
     try {
       const res = await client.query(
@@ -409,7 +433,12 @@ bot.on('message', async (msg) => {
 
       console.log('dateStr', dateStr);
       console.log('statsStr', statsStr);
-      reply = `Good job doing ${dateStr} LC question! 🚀 ${namePart}${statsStr}\r\n${response.data}`;
+
+      if (!troll || trollQuotes.length === 0) {
+          quote = response.data;
+      }
+
+      reply = `Good job doing ${dateStr} LC question! 🚀 ${namePart}${statsStr}\r\n${quote}`;
       bot.sendMessage(chatId, reply, {
         reply_to_message_id: messageId,
       });
