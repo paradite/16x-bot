@@ -41,7 +41,7 @@ axios
 
 axios
   .get(trollConfuciusQuoteUrl)
-  .then(response) => {
+  .then((response) => {
     console.log('got remote array of size', response.data.length);
     trollQuotes = response.data;
   })
@@ -77,10 +77,8 @@ function checkAdmin(msg) {
   // Usernames are case sensitive
   const admins = [
     'Hahaashton',
-    'paradite',
     'Mr_Marcia_Ong',
     'n1ds4n',
-    'GilbertZhuo',
   ];
   const chatId = msg.chat.id;
   const msgThreadId = msg.message_thread_id;
