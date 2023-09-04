@@ -17,6 +17,9 @@ client
 let definitionMap = {};
 const termsUrl = 'https://paradite.github.io/16x-bot/terms.json';
 
+let trollQuotes = [];
+const trollConfuciusQuoteUrl = "https://raw.githubusercontent.com/techbump/telegram-bot/main/docs/troll_confucius.json";
+
 const RECURSIVE_MARKER = 'Auto-translation';
 const IGNORE_WORDS = ['haha', 'ha ha', 'lmao', '@'];
 const LANGUAGE_CONFIDENCE_THRESHOLD = 0.85;
@@ -34,6 +37,19 @@ axios
     console.error('init dictionary fail');
     console.error(error);
   });
+
+
+axios
+  .get(trollConfuciusQuoteUrl)
+  .then(response) => {
+    console.log('got remote array of size', response.data.length);
+    trollQuotes = response.data;
+  })
+  .catch((error) => {
+    console.error('init troll fail');
+    console.error(error);
+  });
+
 
 // replace the value below with the Telegram token you receive from @BotFather
 const token = process.env.TELEGRAM_TOKEN;
@@ -344,6 +360,11 @@ bot.on('message', async (msg) => {
   if (msg.photo && msg.caption) {
     const match = msg.caption.match(/#LC(20\d{2})(\d{2})(\d{2})/g);
     const matchTT = msg.caption.match(/#LCTT(20\d{2})(\d{2})(\d{2})/g); // #LCTT (time travel) for submission of past LCs. Note that this will accept any date
+
+    const useTrollQuote = msg.caption.match(/#LC(20\d{2})(\d{2})(\d{2})_trollme/g)
+        && match
+        && (trollQuotes.length > 0);
+
     if (!match && !matchTT) {
       return;
     }
@@ -409,7 +430,11 @@ bot.on('message', async (msg) => {
 
       console.log('dateStr', dateStr);
       console.log('statsStr', statsStr);
-      reply = `Good job doing ${dateStr} LC question! 🚀 ${namePart}${statsStr}\r\n${response.data}`;
+
+      const trollQuoteChoice = Math.floor(Math.random() * trollQuotes.length);
+      const quote = useTrollQuote ? trollQuotes[trollQuoteChoice] : response.data
+
+      reply = `Good job doing ${dateStr} LC question! 🚀 ${namePart}${statsStr}\r\n${quote}`;
       bot.sendMessage(chatId, reply, {
         reply_to_message_id: messageId,
       });
