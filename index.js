@@ -1,6 +1,8 @@
 const TelegramBot = require('node-telegram-bot-api');
 const axios = require('axios');
 const { Client } = require('pg');
+const dotenv = require('dotenv');
+dotenv.config();
 const dayjs = require('dayjs');
 let isBetween = require('dayjs/plugin/isBetween');
 dayjs.extend(isBetween);
@@ -18,7 +20,8 @@ let definitionMap = {};
 const termsUrl = 'https://paradite.github.io/16x-bot/terms.json';
 
 let trollQuotes = [];
-const trollConfuciusQuoteUrl = "https://raw.githubusercontent.com/techbump/telegram-bot/main/docs/troll_confucius.json";
+const trollConfuciusQuoteUrl =
+  'https://raw.githubusercontent.com/techbump/telegram-bot/main/docs/troll_confucius.json';
 
 const RECURSIVE_MARKER = 'Auto-translation';
 const IGNORE_WORDS = ['haha', 'ha ha', 'lmao', '@'];
@@ -38,7 +41,6 @@ axios
     console.error(error);
   });
 
-
 axios
   .get(trollConfuciusQuoteUrl)
   .then((response) => {
@@ -49,7 +51,6 @@ axios
     console.error('init troll fail');
     console.error(error);
   });
-
 
 // replace the value below with the Telegram token you receive from @BotFather
 const token = process.env.TELEGRAM_TOKEN;
@@ -79,6 +80,8 @@ function checkAdmin(msg) {
     'Hahaashton',
     'Mr_Marcia_Ong',
     'n1ds4n',
+    'zdeykid',
+    'Ngelean',
   ];
   const chatId = msg.chat.id;
   const msgThreadId = msg.message_thread_id;
@@ -359,9 +362,10 @@ bot.on('message', async (msg) => {
     const match = msg.caption.match(/#LC(20\d{2})(\d{2})(\d{2})/g);
     const matchTT = msg.caption.match(/#LCTT(20\d{2})(\d{2})(\d{2})/g); // #LCTT (time travel) for submission of past LCs. Note that this will accept any date
 
-    const useTrollQuote = msg.caption.match(/#LC(20\d{2})(\d{2})(\d{2})_trollme/g)
-        && match
-        && (trollQuotes.length > 0);
+    const useTrollQuote =
+      msg.caption.match(/#LC(20\d{2})(\d{2})(\d{2})_trollme/g) &&
+      match &&
+      trollQuotes.length > 0;
 
     if (!match && !matchTT) {
       return;
@@ -430,7 +434,9 @@ bot.on('message', async (msg) => {
       console.log('statsStr', statsStr);
 
       const trollQuoteChoice = Math.floor(Math.random() * trollQuotes.length);
-      const quote = useTrollQuote ? trollQuotes[trollQuoteChoice] : response.data
+      const quote = useTrollQuote
+        ? trollQuotes[trollQuoteChoice]
+        : response.data;
 
       reply = `Good job doing ${dateStr} LC question! 🚀 ${namePart}${statsStr}\r\n${quote}`;
       bot.sendMessage(chatId, reply, {
