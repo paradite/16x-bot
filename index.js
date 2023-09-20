@@ -548,7 +548,7 @@ bot.onText(/\/startLC/i, async (msg) => {
   });
   chatIdCronStatusMap[chatId] = true;
   console.log('Cron job has started');
-  // Just for testing every 5 seconds
+  // Just for testing every 1 minute
   // cronJob = cron.schedule('* * * * *', () => {
   // Posts a daily question at 8:01AM
   cronJob = cron.schedule('01 8 * * *', () => {
@@ -563,6 +563,10 @@ bot.onText(/\/startLC/i, async (msg) => {
       .catch((error) => {
         console.error(error);
       });
+  },
+  {
+    scheduled: true,
+    timezone: 'Asia/Singapore',
   });
 });
 
