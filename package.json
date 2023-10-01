@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "git pull && pm2 restart index"
+    "start": "git pull && pm2 restart index",
+    "start:bun": "bun index.js"
   },
   "author": "",
   "dependencies": {

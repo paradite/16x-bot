@@ -1,15 +1,19 @@
 const TelegramBot = require('node-telegram-bot-api');
 const axios = require('axios');
-const { Client } = require('pg');
+const { Pool } = require('pg'); // Changed from Client to Pool
 const dotenv = require('dotenv');
 dotenv.config();
 const dayjs = require('dayjs');
 let isBetween = require('dayjs/plugin/isBetween');
 dayjs.extend(isBetween);
 const cron = require('node-cron');
-const client = new Client();
+const pool = new Pool({
+  // You can configure your pool settings here, if needed.
+  // max: 20, // max number of clients in the pool
+  // idleTimeoutMillis: 30000, // how long a client is allowed to remain idle before being closed
+});
 
-client
+pool
   .connect()
   .then(() => console.log('connected'))
   .catch((err) => console.error('connection error', err.stack));
@@ -418,7 +422,7 @@ bot.on('message', async (msg) => {
 
     let statsStr = '';
     try {
-      const res = await client.query(
+      const res = await pool.query(
         `SELECT COUNT(*) FROM ( SELECT DISTINCT a.username FROM lc_records as a WHERE a.qn_date = $1 and a.username != $2 ) as temp `,
         [dateStr, namePart]
       );
@@ -450,7 +454,7 @@ bot.on('message', async (msg) => {
 
     try {
       console.log('executing query');
-      await client.query(
+      await pool.query(
         `INSERT INTO lc_records (username, qn_date, has_image, msg_text, timestamp) VALUES ($1, $2, $3, $4, $5)`,
         [namePart, dateStr, true, msg.caption, new Date()]
       );
